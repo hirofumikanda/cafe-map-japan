@@ -35,7 +35,9 @@ curl -i -r 0-99 http://localhost:8080/cafe.pmtiles
 
 ### 本番環境へのデプロイ
 
-本番環境の具体的なホスティング先(GitHub Pages、Cloudflare Pages、S3+CloudFront、nginx等)はdesign.mdの時点で未確定(Open Questions参照)。上記いずれも静的ファイルに対するHTTP Rangeリクエストを標準でサポートしているため、`public/`配下(`cafe.pmtiles`を含む)をそのままアップロードすれば要件を満たせる。`server/serve.js`はローカル開発・動作確認用であり、本番配信そのものを担うことは想定していない。
+本番環境のホスティング先は**GitHub Pages**に決定した(design.md Decision 3参照)。GitHub Pages(Fastly/Varnish CDN経由)は静的ファイルへのHTTP Rangeリクエストを標準でサポートしており、実ファイルへの`curl -r`検証で`206 Partial Content`・正しい`Content-Range`が返ることを確認済み。`public/`配下(`cafe.pmtiles`を含む)をそのままデプロイすれば要件を満たせる。
+
+GitHub Pagesのプロジェクトサイトは`https://<user>.github.io/<repo>/`というサブパス配下で配信されるため、`cafe.pmtiles`やフロントエンド資産の参照はこのベースパスを前提とした相対パス/URLで組み立てる必要がある(Issue #5以降のフロントエンド実装で反映する)。`server/serve.js`はローカル開発・動作確認用であり、本番配信そのものを担うことは想定していない。
 
 ## ディレクトリ構成
 
