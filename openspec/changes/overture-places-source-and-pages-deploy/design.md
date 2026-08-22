@@ -42,10 +42,13 @@ Overpassのような公開インスタンスのレート制限が存在しない
 `pipeline/src/geojson.js`の`elementsToFeatures`をOverture Placesレコード向けに書き換え、`properties`に少なくとも次を設定する:
 - `name`: `names.primary`
 - `brand`: `brand.names.primary`(存在する場合)
+- `address`: `addresses[0].freeform`(存在する場合)。OSMの`addr:*`タグのような構造化された住所要素はOverture Placesに無いため、整形済みの1行住所(`freeform`)をそのまま保持する
 - `operator`: 相当するOverture属性が無いため設定しない(既存の`web/src/chains.js`は`brand`/`name`ベースの照合を優先させ、後方互換のため空文字ではなくキー自体を省略する)
 - その他、既存のチェーン判定・ポップアップ表示が参照する属性名(`name`、`brand`)を優先してOSMタグ互換の形にする
 
 `web/src/chains.js`のチェーン判定ロジックは`brand`/`operator`/`name`の値を見て照合するため、Overture由来のpropertiesでも`name`・`brand`が設定されていれば変更不要と想定する。実装時にチェーン判定のテスト(`chains.test.js`)がOverture由来のプロパティ形状でも成立することを確認する。
+
+`web/src/main.js`のポップアップ住所表示(`ADDRESS_KEYS`・`buildCafeAddress`)は、OSMの`addr:*`タグの組み合わせを前提にしており、Overture Places由来のGeoJSONではこれらのタグが存在しないため、そのままでは住所が表示されなくなる(Issue #23実装時に判明)。本Decisionに合わせて`buildCafeAddress`を、上記の`address`属性を直接参照する実装に置き換える。`specs/cafe-map-viewer/spec.md`の「POIクリック時のプロパティポップアップ」要件自体はデータソースに依存しない文言(店名・ブランド・住所等をポップアップ表示)であり、この対応は同要件の継続的な充足のための実装追従であって、要件文言の変更を伴わないため、本changeでは`cafe-map-viewer`のデルタ仕様は追加しない。
 
 ### Decision 5: GitHub Actionsは`web`のビルド・デプロイのみを行う
 ユーザーの選択により、デプロイワークフローはOverture Places取得・PMTiles生成を含まない。そのため`web/public/cafe.pmtiles`はワークフロー実行前にリポジトリのチェックアウト対象に含まれている必要がある。

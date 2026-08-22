@@ -42,3 +42,10 @@
 - [ ] 7.1 `main`ブランチへpushし、GitHub Actions上でビルド・デプロイが成功することを確認する
 - [ ] 7.2 GitHub PagesのURLでWebフロントエンドが表示され、`cafe.pmtiles`が正しく配信される(HTTP Rangeリクエストに対応する)ことを確認する
 - [ ] 7.3 `workflow_dispatch`による手動実行が成功することを確認する
+
+## 8. cafe-map-viewerポップアップのOverture対応 (Issue #31)
+
+- [ ] 8.1 `pipeline/src/geojson.js`の`elementsToFeatures`に、Overture Placesレコードの`addresses[0].freeform`相当を`address`プロパティとして追加する(design.md Decision 4)
+- [ ] 8.2 `pipeline/src/geojson.test.js`に`address`属性の変換を検証するテストケースを追加する
+- [ ] 8.3 `web/src/main.js`の`buildCafeAddress`・`ADDRESS_KEYS`を、OSMの`addr:*`タグ前提から`properties.address`を直接参照する実装に置き換える
+- [ ] 8.4 ローカルで生成したOverture由来のGeoJSON/PMTilesを使い、ポップアップに住所が表示されることを手動確認する

@@ -10,6 +10,7 @@ Overpass APIは公開インスタンスのレート制限・タイムアウト�
 - 取得したOverture Placesの属性(店名・ブランド・カテゴリ等)をGeoJSON FeatureのpropertiesとしてOSMタグ相当の形に変換し、既存のPMTiles変換(`build-tiles.js`)・チェーン判定(`web/src/chains.js`)がそのまま利用できるようにする。
 - `web/`をビルドし、GitHub Pagesへ自動デプロイするGitHub Actionsワークフローを新設する。トリガーは`main`ブランチへのpushおよび手動実行(`workflow_dispatch`)。
 - デプロイワークフローはWebフロントエンドのビルド・公開のみを担い、Overture Placesの取得・PMTiles生成(データパイプラインの実行)は対象外とする。`web/public/cafe.pmtiles`はワークフロー実行前にリポジトリへ用意されている前提とする(詳細はdesign.md参照)。
+- Overture Placesの住所情報(`addresses[0].freeform`)をGeoJSON Featureのpropertiesに`address`として保持し、`web/src/main.js`のポップアップ住所表示(現状OSMの`addr:*`タグの組み合わせが前提)をOverture由来のデータに対応させる。対応しない場合、Overture移行後はポップアップに住所が表示されなくなる回帰が生じる。
 
 ## Capabilities
 
@@ -29,4 +30,5 @@ Overpass APIは公開インスタンスのレート制限・タイムアウト�
 - `openspec/specs/cafe-poi-pipeline/spec.md`: 取得元要件を更新。
 - 新規: `.github/workflows/`配下にGitHub Pagesデプロイ用ワークフローを追加。
 - `web/README.md`: デプロイ手順(GitHub Actions経由)を追記。
+- `web/src/main.js`: ポップアップ住所表示(`ADDRESS_KEYS`・`buildCafeAddress`)を、OSMの`addr:*`タグ前提から`properties.address`を直接参照する実装に置き換える。
 - 追加の外部ツール依存(Overture Places取得に使うDuckDB等)がpipelineの前提環境に加わる。
