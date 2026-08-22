@@ -13,9 +13,9 @@
 
 ## 3. GeoJSONからPMTilesへの変換 (Issue #3)
 
-- [ ] 3.1 tippecanoeを用いて`--minimum-zoom=10 --maximum-zoom=14`でGeoJSONを`cafe.pmtiles`(source-layer名: `cafe`)へ変換するビルドコマンド/スクリプトを実装する
-- [ ] 3.2 生成された`cafe.pmtiles`のメタデータ(minzoom=10, maxzoom=14)を検証する
-- [ ] 3.3 サンプルPOI(既知の座標)がz14タイル内に含まれることを確認する
+- [x] 3.1 tippecanoeを用いて`--minimum-zoom=10 --maximum-zoom=14`でGeoJSONを`cafe.pmtiles`(source-layer名: `cafe`)へ変換するビルドコマンド/スクリプトを実装する
+- [x] 3.2 生成された`cafe.pmtiles`のメタデータ(minzoom=10, maxzoom=14)を検証する
+- [x] 3.3 サンプルPOI(既知の座標)がz14タイル内に含まれることを確認する
 
 ## 4. 静的配信 (Issue #4)
 
