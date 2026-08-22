@@ -24,8 +24,8 @@
 
 ## 5. フロントエンド基盤とOSM背景地図 (Issue #5)
 
-- [ ] 5.1 MapLibre GL JS v6を導入し、地図を初期化するHTML/JSを実装する
-- [ ] 5.2 OpenStreetMap Standardのラスタータイル(`https://tile.openstreetmap.org/{z}/{x}/{y}.png`)を背景地図としてスタイルに追加し、OSM帰属表示を地図上に表示する
+- [x] 5.1 MapLibre GL JS v6を導入し、地図を初期化するHTML/JSを実装する
+- [x] 5.2 OpenStreetMap Standardのラスタータイル(`https://tile.openstreetmap.org/{z}/{x}/{y}.png`)を背景地図としてスタイルに追加し、OSM帰属表示を地図上に表示する
 
 ## 6. カフェ・喫茶店POIレイヤ (Issue #6)
 

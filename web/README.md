@@ -15,6 +15,19 @@ OpenSpec Change: `cafe-map-japan`
 npm install
 ```
 
+## ビルド
+
+バンドラは使用せず、ブラウザがそのまま`import`できるESMバンドルをそのまま配信する構成にしている。`npm run build`は次を行う。
+
+- `node_modules/maplibre-gl/dist/`のESMバンドル(`maplibre-gl.mjs`・`maplibre-gl-worker.mjs`・`maplibre-gl.css`)を`public/vendor/maplibre-gl/`へコピーする。
+- `src/`配下のブラウザ実行用スクリプト(`*.test.js`を除く)を`public/`へコピーする。
+
+```bash
+npm run build
+```
+
+`public/index.html`は[import map](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap)で`"maplibre-gl"`を`./vendor/maplibre-gl/maplibre-gl.mjs`へ解決するため、`src/main.js`は通常のnpmパッケージと同じ書き方(`import { Map } from "maplibre-gl"`)でインポートできる。`public/vendor/`・`public/*.js`はビルド生成物のため.gitignore対象。
+
 ## 静的配信(開発用サーバー)
 
 `server/serve.js`は、`public/`配下をHTTP Rangeリクエスト(206 Partial Content)対応で配信する開発用の静的サーバーです。PMTilesはクライアントがバイト範囲リクエストでタイルを取り出す方式のため、配信元がRangeリクエストに正しく応答できることが必須条件になります(design.md 決定3)。
@@ -41,6 +54,8 @@ GitHub Pagesのプロジェクトサイトは`https://<user>.github.io/<repo>/`�
 
 ## ディレクトリ構成
 
-- `src/`: 地図初期化・レイヤ定義・ポップアップ・アイコン判定ロジックを配置する。
-- `public/`: 静的配信するHTML、アイコンスプライト、`pipeline`が生成する`cafe.pmtiles`を配置する。
+- `src/`: 地図初期化・レイヤ定義・ポップアップ・アイコン判定ロジックを配置する(`npm run build`で`public/`へコピーされる)。
+  - `main.js`: MapLibre GL JS v6で地図を初期化し、OpenStreetMap Standardを背景地図として表示する。
+- `public/`: 静的配信するHTML、アイコンスプライト、`pipeline`が生成する`cafe.pmtiles`を配置する。`vendor/`と`*.js`は`npm run build`の生成物。
+- `scripts/build.js`: `npm run build`の実体(vendorアセットのコピー、`src/`スクリプトのコピー)。
 - `server/serve.js`: `public/`をHTTP Range対応で配信する開発用静的サーバー(`npm run serve`)。
