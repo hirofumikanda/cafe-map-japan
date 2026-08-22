@@ -5,13 +5,17 @@ import { fileURLToPath } from "node:url";
 import { PREFECTURES } from "./prefectures.js";
 import { queryOverpass } from "./overpass-client.js";
 import { elementsToFeatures } from "./geojson.js";
+import { createPrefectureCache } from "./prefecture-cache.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = path.join(__dirname, "..", "out");
 const OUT_FILE = path.join(OUT_DIR, "cafe.geojson");
+const CACHE_DIR = path.join(OUT_DIR, ".prefecture-cache");
 
 // 公開Overpassインスタンスの利用ポリシーに配慮し、都道府県クエリの間隔を空ける(design.md Risks)。
 const REQUEST_INTERVAL_MS = Number(process.env.OVERPASS_REQUEST_INTERVAL_MS ?? 1000);
+// 1 にすると都道府県キャッシュを無視し、全都道府県を強制的に再取得する(通常は不要)。
+const FORCE_REFETCH = process.env.OVERPASS_FORCE_REFETCH === "1";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -35,18 +39,32 @@ function resolvePrefectures() {
 
 async function main() {
   const prefectures = resolvePrefectures();
+  const cache = createPrefectureCache(CACHE_DIR);
   const allFeatures = [];
+  let cachedCount = 0;
 
   for (const [index, prefecture] of prefectures.entries()) {
-    process.stdout.write(
-      `[${index + 1}/${prefectures.length}] Fetching ${prefecture.name} (${prefecture.code})... `,
-    );
-    const elements = await queryOverpass(prefecture);
+    process.stdout.write(`[${index + 1}/${prefectures.length}] ${prefecture.name} (${prefecture.code})... `);
+
+    // 都道府県単位でキャッシュ済みなら再取得しない。途中で失敗した実行を再度走らせたとき、
+    // 既に成功している都道府県への再リクエストを避け、公開Overpassインスタンスへの
+    // 負荷とレート制限に抵触するリスクを減らす。
+    const cached = FORCE_REFETCH ? null : await cache.read(prefecture.code);
+
+    let elements;
+    if (cached) {
+      elements = cached;
+      cachedCount += 1;
+    } else {
+      elements = await queryOverpass(prefecture);
+      await cache.write(prefecture.code, elements);
+    }
+
     const features = elementsToFeatures(elements);
     allFeatures.push(...features);
-    console.log(`${features.length} POIs`);
+    console.log(`${features.length} POIs${cached ? " (cache)" : ""}`);
 
-    if (index < prefectures.length - 1) {
+    if (!cached && index < prefectures.length - 1) {
       await sleep(REQUEST_INTERVAL_MS);
     }
   }
@@ -56,10 +74,15 @@ async function main() {
   const featureCollection = { type: "FeatureCollection", features: allFeatures };
   await mkdir(OUT_DIR, { recursive: true });
   await writeFile(OUT_FILE, JSON.stringify(featureCollection));
-  console.log(`\nWrote ${allFeatures.length} features to ${OUT_FILE}`);
+
+  const cacheNote = cachedCount > 0 ? ` (${cachedCount} prefectures loaded from cache)` : "";
+  console.log(`\nWrote ${allFeatures.length} features to ${OUT_FILE}${cacheNote}`);
 }
 
 main().catch((error) => {
   console.error(`\nFailed to fetch cafe POIs: ${error.message}`);
+  console.error(
+    "Prefectures already fetched successfully are cached under out/.prefecture-cache/ and will be skipped on the next run.",
+  );
   process.exitCode = 1;
 });
