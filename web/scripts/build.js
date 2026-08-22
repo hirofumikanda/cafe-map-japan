@@ -16,6 +16,7 @@ const VENDOR_FILES = [
   ["maplibre-gl/dist/maplibre-gl-shared.mjs", "vendor/maplibre-gl/maplibre-gl-shared.mjs"],
   ["maplibre-gl/dist/maplibre-gl-worker.mjs", "vendor/maplibre-gl/maplibre-gl-worker.mjs"],
   ["maplibre-gl/dist/maplibre-gl.css", "vendor/maplibre-gl/maplibre-gl.css"],
+  ["pmtiles/dist/index.js", "vendor/pmtiles/index.js"],
 ];
 
 async function copyVendorAssets() {

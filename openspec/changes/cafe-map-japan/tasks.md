@@ -29,10 +29,10 @@
 
 ## 6. カフェ・喫茶店POIレイヤ (Issue #6)
 
-- [ ] 6.1 `pmtiles`ライブラリの`Protocol`を`maplibregl.addProtocol`に登録する
-- [ ] 6.2 `pmtiles://`経由で`cafe.pmtiles`をvector sourceとしてスタイルに追加する
-- [ ] 6.3 `cafe`レイヤをsymbolレイヤとして追加し、z10-14の範囲で表示・z14超過時はオーバーズームで表示されることを確認する
-- [ ] 6.4 z10未満ではPOIシンボルが表示されないことを確認する
+- [x] 6.1 `pmtiles`ライブラリの`Protocol`を`maplibregl.addProtocol`に登録する
+- [x] 6.2 `pmtiles://`経由で`cafe.pmtiles`をvector sourceとしてスタイルに追加する
+- [x] 6.3 `cafe`レイヤをsymbolレイヤとして追加し、z10-14の範囲で表示・z14超過時はオーバーズームで表示されることを確認する
+- [x] 6.4 z10未満ではPOIシンボルが表示されないことを確認する
 
 ## 7. ポップアップ表示 (Issue #7)
 
