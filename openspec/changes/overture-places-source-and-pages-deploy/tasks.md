@@ -1,8 +1,8 @@
 ## 1. Overture Places取得の実装 (Issue #22)
 
-- [ ] 1.1 `pipeline/src/overture-client.js`を新設し、DuckDB CLI(spatial/httpfs拡張)をサブプロセス実行してOverture Maps Places(theme=places, type=place)を、日本を覆うbbox・`categories.primary IN ('cafe','coffee_shop')`・`confidence >= 0.9`の条件でクエリしGeoJSON形式のレコード群を取得する関数を実装する
-- [ ] 1.2 取得したレコードのうち`addresses`配列に国コード`JP`を含まないものを除外するフィルタを実装する(design.md Decision 2)
-- [ ] 1.3 `overture-client.js`のユニットテスト(`overture-client.test.js`)を追加し、DuckDB呼び出し部分をモック/スタブしてクエリ条件・フィルタ挙動を検証する
+- [x] 1.1 `pipeline/src/overture-client.js`を新設し、DuckDB CLI(spatial/httpfs拡張)をサブプロセス実行してOverture Maps Places(theme=places, type=place)を、日本を覆うbbox・`categories.primary IN ('cafe','coffee_shop')`・`confidence >= 0.9`の条件でクエリしGeoJSON形式のレコード群を取得する関数を実装する
+- [x] 1.2 取得したレコードのうち`addresses`配列に国コード`JP`を含まないものを除外するフィルタを実装する(design.md Decision 2)
+- [x] 1.3 `overture-client.js`のユニットテスト(`overture-client.test.js`)を追加し、DuckDB呼び出し部分をモック/スタブしてクエリ条件・フィルタ挙動を検証する
 
 ## 2. GeoJSON変換の書き換え (Issue #23)
 
