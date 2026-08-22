@@ -1,6 +1,8 @@
 import { Map as MapLibreMap, Popup, addProtocol } from "maplibre-gl";
 import { Protocol as PMTilesProtocol } from "pmtiles";
 
+import { CHAIN_TABLE, GENERIC_CAFE_ICON_ID, buildIconImageExpression } from "./chains.js";
+
 const OSM_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
 
@@ -17,7 +19,6 @@ const CAFE_PMTILES_URL = new URL("cafe.pmtiles", window.location.href).href;
 const CAFE_SOURCE_ID = "cafe";
 const CAFE_LAYER_ID = "cafe";
 const CAFE_SOURCE_LAYER = "cafe";
-const CAFE_GENERIC_ICON_ID = "cafe-generic";
 // PMTilesの生成ズーム範囲(z10-14)のうち、シンボルレイヤを表示し始める下限。
 // z14を超えるズームでは意図的にlayer側のmaxzoomを設定せず、ソースのオーバーズームで表示させ続ける。
 const CAFE_LAYER_MIN_ZOOM = 10;
@@ -55,16 +56,50 @@ const map = new MapLibreMap({
 // ブラウザのdevtoolsから地図の状態を確認できるよう公開しておく(動作確認・デバッグ用)。
 window.cafeMap = map;
 
-// チェーン店専用アイコン・汎用アイコンのスプライト(Issue #8)が用意されるまでの
-// 汎用プレースホルダアイコンを、canvasで生成してその場で登録する。
-function createGenericCafeIcon(size = 32) {
+// チェーン専用アイコン・汎用アイコンのスプライトを、canvasで生成してその場で登録する。
+// 公式ロゴを複製せず、色と図形(丸/四角/ひし形等)の組み合わせで識別できる
+// オリジナルのグリフとする(design.md 決定5)。
+const ICON_DEFS = [
+  { id: GENERIC_CAFE_ICON_ID, shape: "circle", color: "#6f4e37" },
+  ...CHAIN_TABLE.map((chain) => ({ id: chain.iconId, shape: chain.shape, color: chain.color })),
+];
+
+function createChainIcon({ shape, color, size = 32 }) {
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext("2d");
+  const center = size / 2;
+  const radius = size / 2 - 2;
+
   ctx.beginPath();
-  ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2);
-  ctx.fillStyle = "#6f4e37";
+  switch (shape) {
+    case "square": {
+      const half = radius * 0.85;
+      const corner = 4;
+      ctx.moveTo(center - half + corner, center - half);
+      ctx.arcTo(center + half, center - half, center + half, center + half, corner);
+      ctx.arcTo(center + half, center + half, center - half, center + half, corner);
+      ctx.arcTo(center - half, center + half, center - half, center - half, corner);
+      ctx.arcTo(center - half, center - half, center + half, center - half, corner);
+      ctx.closePath();
+      break;
+    }
+    case "diamond": {
+      ctx.moveTo(center, center - radius);
+      ctx.lineTo(center + radius, center);
+      ctx.lineTo(center, center + radius);
+      ctx.lineTo(center - radius, center);
+      ctx.closePath();
+      break;
+    }
+    case "circle":
+    default:
+      ctx.arc(center, center, radius, 0, Math.PI * 2);
+      break;
+  }
+
+  ctx.fillStyle = color;
   ctx.fill();
   ctx.lineWidth = 2;
   ctx.strokeStyle = "#ffffff";
@@ -72,19 +107,26 @@ function createGenericCafeIcon(size = 32) {
   return ctx.getImageData(0, 0, size, size);
 }
 
+function registerCafeIcons() {
+  for (const icon of ICON_DEFS) {
+    if (!map.hasImage(icon.id)) {
+      map.addImage(icon.id, createChainIcon(icon));
+    }
+  }
+}
+
 // スタイル読み込み完了を待たずにレイヤへ`icon-image`参照を追加すると、初回描画時に
 // アイコン未登録のままレンダリングされてしまう(styleimagemissingの解決が非同期のため)。
 // そのためレイヤ追加より前に、この時点で同期的にアイコンを登録しておく。
 map.on("styleimagemissing", (e) => {
-  if (e.id === CAFE_GENERIC_ICON_ID && !map.hasImage(CAFE_GENERIC_ICON_ID)) {
-    map.addImage(CAFE_GENERIC_ICON_ID, createGenericCafeIcon());
+  const icon = ICON_DEFS.find((def) => def.id === e.id);
+  if (icon && !map.hasImage(icon.id)) {
+    map.addImage(icon.id, createChainIcon(icon));
   }
 });
 
 map.on("load", () => {
-  if (!map.hasImage(CAFE_GENERIC_ICON_ID)) {
-    map.addImage(CAFE_GENERIC_ICON_ID, createGenericCafeIcon());
-  }
+  registerCafeIcons();
 
   // spec: PMTilesの生成ズーム範囲(z10-14)を外れるズームレベルでは、
   // オーバーズームまたは非表示によって適切に扱わなければならない(SHALL)。
@@ -98,7 +140,9 @@ map.on("load", () => {
     "source-layer": CAFE_SOURCE_LAYER,
     minzoom: CAFE_LAYER_MIN_ZOOM,
     layout: {
-      "icon-image": CAFE_GENERIC_ICON_ID,
+      // spec: brand/operator/nameに基づき既知チェーンには専用アイコン、
+      // それ以外には汎用アイコンを割り当てる(design.md 決定5、chains.js参照)。
+      "icon-image": buildIconImageExpression(),
       "icon-allow-overlap": true,
       "icon-size": 0.6,
     },
