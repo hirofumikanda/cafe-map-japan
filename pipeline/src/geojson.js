@@ -1,33 +1,52 @@
-function getCoordinates(element) {
-  if (typeof element.lon === "number" && typeof element.lat === "number") {
-    return [element.lon, element.lat];
-  }
+function getCoordinates(record) {
+  const geometry = record.geometry;
   if (
-    element.center &&
-    typeof element.center.lon === "number" &&
-    typeof element.center.lat === "number"
+    geometry?.type === "Point" &&
+    Array.isArray(geometry.coordinates) &&
+    typeof geometry.coordinates[0] === "number" &&
+    typeof geometry.coordinates[1] === "number"
   ) {
-    return [element.center.lon, element.center.lat];
+    return [geometry.coordinates[0], geometry.coordinates[1]];
   }
   return null;
 }
 
-// Overpass APIのelements(node/way/relation)をGeoJSON Point Featureへ変換する。
-// name/brand/operator等、OSM上のタグはproperties側で欠落させず保持する(spec: ブランド識別情報の保持)。
-export function elementsToFeatures(elements) {
+// Overture Placesレコードのproperties.brand相当を、既存のweb/src/chains.jsが参照する
+// `brand`属性名で保持する(design.md Decision 4)。
+function getBrandName(record) {
+  return record.brand?.names?.primary;
+}
+
+// Overture Placesレコード(overture-client.jsの`queryOverturePlaces`が返す形)を
+// GeoJSON Point Featureへ変換する。既存のPMTiles変換・チェーン判定(web/src/chains.js)が
+// そのまま利用できるよう、`name`・`brand`をOSMタグ互換のproperties名で保持する
+// (design.md Decision 4)。Overture Placesには`operator`に相当する属性が無いため設定しない。
+export function elementsToFeatures(records) {
   const features = [];
 
-  for (const element of elements) {
-    const coordinates = getCoordinates(element);
+  for (const record of records) {
+    const coordinates = getCoordinates(record);
     if (!coordinates) {
       continue;
     }
 
+    const properties = {};
+
+    const name = record.names?.primary;
+    if (name) {
+      properties.name = name;
+    }
+
+    const brand = getBrandName(record);
+    if (brand) {
+      properties.brand = brand;
+    }
+
     features.push({
       type: "Feature",
-      id: `${element.type}/${element.id}`,
+      id: record.id,
       geometry: { type: "Point", coordinates },
-      properties: { ...element.tags },
+      properties,
     });
   }
 
