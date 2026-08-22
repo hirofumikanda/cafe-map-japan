@@ -7,6 +7,10 @@
   "engines": {
     "node": ">=18"
   },
+  "scripts": {
+    "fetch": "node src/fetch-pois.js",
+    "test": "node --test"
+  },
   "devDependencies": {
     "pmtiles": "^3.0.0"
   }
