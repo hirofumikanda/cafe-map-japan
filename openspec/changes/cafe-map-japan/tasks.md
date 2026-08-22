@@ -1,7 +1,7 @@
 ## 1. プロジェクト基盤 (Issue #1)
 
-- [ ] 1.1 データパイプライン用ディレクトリ(例: `pipeline/`)とフロントエンド用ディレクトリ(例: `web/`)の構成を作成する
-- [ ] 1.2 必要ツール(Overpass APIクライアント実行環境、tippecanoe、pmtilesライブラリ、MapLibre GL JS v6)の依存関係を定義する
+- [x] 1.1 データパイプライン用ディレクトリ(例: `pipeline/`)とフロントエンド用ディレクトリ(例: `web/`)の構成を作成する
+- [x] 1.2 必要ツール(Overpass APIクライアント実行環境、tippecanoe、pmtilesライブラリ、MapLibre GL JS v6)の依存関係を定義する
 
 ## 2. Overpass APIからのPOI取得 (Issue #2)
 
