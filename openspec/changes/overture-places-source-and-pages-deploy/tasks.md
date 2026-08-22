@@ -6,8 +6,8 @@
 
 ## 2. GeoJSON変換の書き換え (Issue #23)
 
-- [ ] 2.1 `pipeline/src/geojson.js`を、Overture PlacesレコードをGeoJSON Point Featureへ変換する実装に書き換える(`name`←`names.primary`、`brand`←`brand.names.primary`等、design.md Decision 4)
-- [ ] 2.2 `pipeline/src/geojson.test.js`をOverture Placesレコード形状の入力に合わせて更新する
+- [x] 2.1 `pipeline/src/geojson.js`を、Overture PlacesレコードをGeoJSON Point Featureへ変換する実装に書き換える(`name`←`names.primary`、`brand`←`brand.names.primary`等、design.md Decision 4)
+- [x] 2.2 `pipeline/src/geojson.test.js`をOverture Placesレコード形状の入力に合わせて更新する
 
 ## 3. fetch-poisフローの更新 (Issue #24)
 
