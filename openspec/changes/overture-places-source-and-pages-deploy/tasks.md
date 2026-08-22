@@ -18,10 +18,10 @@
 
 ## 4. 実データでの検証 (Issue #25)
 
-- [ ] 4.1 ローカルでDuckDBをインストールし、`npm run fetch`相当のOverture Places取得を実行して`out/cafe.geojson`が生成されることを確認する
-- [ ] 4.2 取得件数・confidence除外件数をOverpass時と比較し、design.mdのRisksに記載した収録POI数の変化を確認する
-- [ ] 4.3 `npm run build:tiles`・`npm run verify:tiles`が変更なしで成功することを確認する
-- [ ] 4.4 `web/src/chains.test.js`がOverture由来のproperties形状でも成立することを確認する(既存テストが通ることの確認、必要ならテストケースを追加)
+- [x] 4.1 ローカルでDuckDBをインストールし、`npm run fetch`相当のOverture Places取得を実行して`out/cafe.geojson`が生成されることを確認する
+- [x] 4.2 取得件数・confidence除外件数をOverpass時と比較し、design.mdのRisksに記載した収録POI数の変化を確認する
+- [x] 4.3 `npm run build:tiles`・`npm run verify:tiles`が変更なしで成功することを確認する
+- [x] 4.4 `web/src/chains.test.js`がOverture由来のproperties形状でも成立することを確認する(既存テストが通ることの確認、必要ならテストケースを追加)
 
 ## 5. ドキュメント更新 (Issue #26)
 
