@@ -29,6 +29,8 @@ tippecanoeは`--minimum-zoom=10 --maximum-zoom=14`を指定した上で`.pmtiles
 ### 3. PMTilesはHTTP Range対応の静的ホスティングから配信し、フロントエンドは`pmtiles`JSライブラリのProtocolハンドラ経由で読み込む
 PMTilesはクライアントがバイト範囲リクエストでタイルを取り出す方式のため、配信環境がRangeリクエストをそのまま通す(ストリップしない)ことが必須条件になる。フロントエンドでは`pmtiles`ライブラリの`Protocol`を`maplibregl.addProtocol`に登録し、MapLibreスタイルのvector sourceを`pmtiles://<配信URL>/cafe.pmtiles`として参照する。
 - 代替案: 通常のMVTタイルサーバー(z/x/yごとにHTTPで配信)を別途構築 → サーバーコンポーネントが増え「静的配信」という要求から外れるため却下。
+- 本番の配信先はGitHub Pagesに決定した(Open Questions参照)。実ファイル(`leaflet-extras.github.io`)への`curl -r`検証で、GitHub Pages(Fastly/Varnish CDN経由)が`206 Partial Content`・`Content-Range`付きでRangeリクエストに正しく応答し、返却バイトが元ファイルと完全一致することを確認済み。
+- 実装時の留意点: GitHub Pagesのプロジェクトサイトは`https://<user>.github.io/<repo>/`というサブパス配下で配信されるため、`cafe.pmtiles`やフロントエンド資産の参照はこのベースパスを前提とした相対パス/URLで組み立てる必要がある(Issue #5以降のフロントエンド実装時に反映する)。
 
 ### 4. 背景地図はOpenStreetMap Standardのラスタータイルをそのまま利用する
 MapLibre GL JS v6のスタイルJSONにraster sourceとして`https://tile.openstreetmap.org/{z}/{x}/{y}.png`を追加し、OSM利用規約に従い適切な帰属表示(attribution)を地図上に表示する。
@@ -42,7 +44,7 @@ POIの`brand`タグ(なければ`operator`/`name`)を、既知チェーン名(�
 
 - [公開Overpassインスタンスのレート制限・タイムアウト] → 都道府県単位への分割、リトライ、リクエスト間隔の確保で緩和する。
 - [OSM Standardタイルの利用規約(大量アクセス制限)に抵触しうる] → 本changeのスコープでは要求通りOSM Standardを直接利用するが、利用者数が増えた場合は自前のタイルキャッシュ/プロキシへの切り替えを別changeとして検討する前提を明記しておく。
-- [PMTilesを配信する環境がRangeリクエストを正しく扱わない可能性] → specの「PMTilesの静的配信」要件でRange対応を必須化し、デプロイ先選定時に確認する。
+- [PMTilesを配信する環境がRangeリクエストを正しく扱わない可能性] → specの「PMTilesの静的配信」要件でRange対応を必須化する。本番配信先として決定したGitHub Pagesについては実ファイルへの`curl -r`検証でRange対応(206 Partial Content)を確認済み(Decision 3参照)。
 - [チェーン店ブランド名の表記ゆれ(全角/半角、法人格の有無等)による誤判定] → 照合は正規化(トリム・全角半角統一)した上で部分一致も許容し、未知パターンは汎用アイコンに安全側でフォールバックする。
 - [Overpassスナップショットの鮮度] → パイプラインは再実行可能なバッチとして設計し、リアルタイム同期は行わない前提を明記する。
 
@@ -55,5 +57,8 @@ POIの`brand`タグ(なければ`operator`/`name`)を、既知チェーン名(�
 
 ## Open Questions
 
-- 具体的な静的ホスティング先(S3/Cloudflare Pages/GitHub Pages/自前nginx等)は未確定。specは「Rangeリクエスト対応の静的配信」という振る舞い要件のみを定めており、ホスティング先の選定は実装時に決定してもspec・設計方針・タスク分解に影響しない。
 - ドトール・ベローチェ以外にアイコン化する具体的なチェーン一覧は未確定。照合テーブルを拡張可能な構造にすることで、実装時・運用時に追加していける。
+
+## Resolved Questions
+
+- 具体的な静的ホスティング先: **GitHub Pages**に決定(Decision 3参照)。Rangeリクエスト対応を実ファイルで確認済み。
