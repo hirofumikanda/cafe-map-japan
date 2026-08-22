@@ -11,10 +11,10 @@
 
 ## 3. fetch-poisフローの更新 (Issue #24)
 
-- [ ] 3.1 `pipeline/src/fetch-pois.js`を、都道府県分割ループを廃止し単一のOverture Places取得呼び出しに書き換える
-- [ ] 3.2 `pipeline/src/prefectures.js`・`pipeline/src/prefecture-cache.js`・`pipeline/src/prefecture-cache.test.js`を削除する(Overpass都道府県分割取得に付随する仕組みのため)
-- [ ] 3.3 `pipeline/src/overpass-client.js`・`pipeline/src/overpass-client.test.js`を削除する
-- [ ] 3.4 `fetch-pois.js`の環境変数(`OVERPASS_*`)をOverture用の命名に置き換える(例: `OVERTURE_*`)。取得失敗時に不完全なGeoJSONを出力しない挙動は維持する
+- [x] 3.1 `pipeline/src/fetch-pois.js`を、都道府県分割ループを廃止し単一のOverture Places取得呼び出しに書き換える
+- [x] 3.2 `pipeline/src/prefectures.js`・`pipeline/src/prefecture-cache.js`・`pipeline/src/prefecture-cache.test.js`を削除する(Overpass都道府県分割取得に付随する仕組みのため)
+- [x] 3.3 `pipeline/src/overpass-client.js`・`pipeline/src/overpass-client.test.js`を削除する
+- [x] 3.4 `fetch-pois.js`の環境変数(`OVERPASS_*`)をOverture用の命名に置き換える(例: `OVERTURE_*`)。取得失敗時に不完全なGeoJSONを出力しない挙動は維持する
 
 ## 4. 実データでの検証 (Issue #25)
 
