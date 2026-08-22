@@ -28,6 +28,8 @@ Webフロントエンド側は現状、GitHub Pagesを本番ホスティング�
 
 `pipeline/src/overpass-client.js`を`pipeline/src/overture-client.js`に置き換え、`spawn`でduckdb CLIを呼び出しGeoJSON Lines(または一時ファイル)を得る方式を、既存の`tippecanoe`呼び出し(`build-tiles.js`)と同じ「外部CLIをサブプロセスとして呼ぶ」パターンに揃える。
 
+実データで検証したところ、DuckDB CLIの`-json`出力モードは、STRUCT/LIST型の列(`names`・`categories`・`brand`・`addresses`)を素のまま`SELECT`すると、Python風のdict/list文字列(例: `{'primary': ...}`)として出力し、有効なJSONにならないことが判明した(Issue #24実装時に発見)。これにより`hasJapanAddress`の`Array.isArray(record.addresses)`判定が常に`false`となり、実データに対して全レコードが除外されてしまう。`SELECT`側でこれらの列を`to_json(names) AS names`のように明示的に`to_json()`でラップすることで、正しくネストしたJSONとして出力されることを実データ(Overture Maps release `2026-08-19.0`)で確認済み。`buildQuery`をこの形に修正する。
+
 ### Decision 2: 地理的絞り込みはbboxで行い、都道府県分割・レート制限対策は廃止する
 Overpassのような公開インスタンスのレート制限が存在しないため、都道府県単位のクエリ分割・待機(`REQUEST_INTERVAL_MS`)・`prefecture-cache.js`による再開キャッシュは不要になる。日本全体を1回のクエリ(日本を覆う矩形bbox: 概ね経度122〜154、緯度20〜46)で取得する。
 

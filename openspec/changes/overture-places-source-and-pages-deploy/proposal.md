@@ -11,6 +11,7 @@ Overpass APIは公開インスタンスのレート制限・タイムアウト�
 - `web/`をビルドし、GitHub Pagesへ自動デプロイするGitHub Actionsワークフローを新設する。トリガーは`main`ブランチへのpushおよび手動実行(`workflow_dispatch`)。
 - デプロイワークフローはWebフロントエンドのビルド・公開のみを担い、Overture Placesの取得・PMTiles生成(データパイプラインの実行)は対象外とする。`web/public/cafe.pmtiles`はワークフロー実行前にリポジトリへ用意されている前提とする(詳細はdesign.md参照)。
 - Overture Placesの住所情報(`addresses[0].freeform`)をGeoJSON Featureのpropertiesに`address`として保持し、`web/src/main.js`のポップアップ住所表示(現状OSMの`addr:*`タグの組み合わせが前提)をOverture由来のデータに対応させる。対応しない場合、Overture移行後はポップアップに住所が表示されなくなる回帰が生じる。
+- Overture Places取得のSQL(`overture-client.js`)で、STRUCT/LIST型の属性列(`names`・`categories`・`brand`・`addresses`)をDuckDBの`-json`出力でも正しくネストしたJSONとして得られるよう`to_json()`でラップする(現状は非JSON文字列として出力され、`addresses`ベースの国コードフィルタが実データに対して常に空集合を返す不具合があるため)。
 
 ## Capabilities
 
@@ -31,4 +32,5 @@ Overpass APIは公開インスタンスのレート制限・タイムアウト�
 - 新規: `.github/workflows/`配下にGitHub Pagesデプロイ用ワークフローを追加。
 - `web/README.md`: デプロイ手順(GitHub Actions経由)を追記。
 - `web/src/main.js`: ポップアップ住所表示(`ADDRESS_KEYS`・`buildCafeAddress`)を、OSMの`addr:*`タグ前提から`properties.address`を直接参照する実装に置き換える。
+- `pipeline/src/overture-client.js`: SELECT句の`names`・`categories`・`brand`・`addresses`列を`to_json()`でラップし、DuckDB `-json`出力での非JSON文字列化を修正する。
 - 追加の外部ツール依存(Overture Places取得に使うDuckDB等)がpipelineの前提環境に加わる。
