@@ -1,4 +1,4 @@
-import { Map as MapLibreMap, addProtocol } from "maplibre-gl";
+import { Map as MapLibreMap, Popup, addProtocol } from "maplibre-gl";
 import { Protocol as PMTilesProtocol } from "pmtiles";
 
 const OSM_ATTRIBUTION =
@@ -103,4 +103,73 @@ map.on("load", () => {
       "icon-size": 0.6,
     },
   });
+
+  // spec: POIシンボルをクリックした際、店名・ブランド・住所等のプロパティをポップアップで表示する(SHALL)。
+  // "click"をCAFE_LAYER_IDに紐づけて登録することで、当該レイヤのFeature上でのクリックのみに反応する
+  // (POIが存在しない地点のクリックではe.featuresが空になりポップアップは表示されない)。
+  map.on("click", CAFE_LAYER_ID, (e) => {
+    const feature = e.features?.[0];
+    if (!feature) {
+      return;
+    }
+    new Popup({ closeButton: true, closeOnClick: true })
+      .setLngLat(e.lngLat)
+      .setHTML(buildCafePopupHtml(feature.properties))
+      .addTo(map);
+  });
+
+  map.on("mouseenter", CAFE_LAYER_ID, () => {
+    map.getCanvas().style.cursor = "pointer";
+  });
+  map.on("mouseleave", CAFE_LAYER_ID, () => {
+    map.getCanvas().style.cursor = "";
+  });
 });
+
+// OSMの住所タグ(addr:*)を、日本の住所表記に近い順で連結する。
+// addr:fullがあればそれを優先し、なければ利用可能なタグのみを組み合わせる。
+const ADDRESS_KEYS = [
+  "addr:province",
+  "addr:prefecture",
+  "addr:city",
+  "addr:municipality",
+  "addr:suburb",
+  "addr:quarter",
+  "addr:neighbourhood",
+  "addr:street",
+  "addr:housenumber",
+];
+
+function buildCafeAddress(properties) {
+  if (properties["addr:full"]) {
+    return properties["addr:full"];
+  }
+  const parts = ADDRESS_KEYS.map((key) => properties[key]).filter(Boolean);
+  return parts.length > 0 ? parts.join("") : null;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// propertiesはOSMのタグ(利用者が編集可能な自由入力)に由来するため、HTMLへの埋め込み時は必ずエスケープする。
+function buildCafePopupHtml(properties) {
+  const name = properties.name || properties.brand || properties.operator || "名称不明のカフェ・喫茶店";
+  const brand = properties.brand;
+  const address = buildCafeAddress(properties);
+
+  const rows = [];
+  if (brand && brand !== name) {
+    rows.push(`<div class="cafe-popup-brand">${escapeHtml(brand)}</div>`);
+  }
+  if (address) {
+    rows.push(`<div class="cafe-popup-address">${escapeHtml(address)}</div>`);
+  }
+
+  return `<div class="cafe-popup"><div class="cafe-popup-name">${escapeHtml(name)}</div>${rows.join("")}</div>`;
+}
