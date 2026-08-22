@@ -56,7 +56,7 @@ GitHub Pagesのプロジェクトサイトは`https://<user>.github.io/<repo>/`�
 ## ディレクトリ構成
 
 - `src/`: 地図初期化・レイヤ定義・ポップアップ・アイコン判定ロジックを配置する(`npm run build`で`public/`へコピーされる)。
-  - `main.js`: MapLibre GL JS v6で地図を初期化し、OpenStreetMap Standardを背景地図として表示する。`pmtiles`の`Protocol`を`addProtocol`に登録し、配信されている`cafe.pmtiles`をvector source(`pmtiles://`)として読み込み、`cafe`レイヤ(symbol)としてPOIを表示する。
+  - `main.js`: MapLibre GL JS v6で地図を初期化し、OpenStreetMap Standardを背景地図として表示する。`pmtiles`の`Protocol`を`addProtocol`に登録し、配信されている`cafe.pmtiles`をvector source(`pmtiles://`)として読み込み、`cafe`レイヤ(symbol)としてPOIを表示する。POIシンボルのクリックで店名・ブランド・住所等のプロパティをポップアップ表示する。
 - `public/`: 静的配信するHTML、アイコンスプライト、`pipeline`が生成する`cafe.pmtiles`を配置する。`vendor/`と`*.js`は`npm run build`の生成物。
 - `scripts/build.js`: `npm run build`の実体(vendorアセットのコピー、`src/`スクリプトのコピー)。
 - `server/serve.js`: `public/`をHTTP Range対応で配信する開発用静的サーバー(`npm run serve`)。
