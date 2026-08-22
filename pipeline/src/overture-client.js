@@ -33,16 +33,20 @@ export function buildQuery({
 
   const categoryList = categories.map((category) => `'${category}'`).join(", ");
 
+  // names/categories/brand/addressesはSTRUCT/LIST型で、duckdb CLIの`-json`出力は
+  // これらを素のままSELECTすると有効なJSONにならない非JSON文字列(Python風のdict/list表記)
+  // として出力してしまう。to_json()で明示的にJSON化することで、execDuckDbが行全体を
+  // JSON.parseした際にこれらの列も正しくネストしたオブジェクト/配列として得られる。
   return `INSTALL spatial; LOAD spatial;
 INSTALL httpfs; LOAD httpfs;
 SET s3_region='us-west-2';
 
 SELECT
   id,
-  names,
-  categories,
-  brand,
-  addresses,
+  to_json(names) AS names,
+  to_json(categories) AS categories,
+  to_json(brand) AS brand,
+  to_json(addresses) AS addresses,
   confidence,
   ST_AsGeoJSON(geometry) AS geometry
 FROM read_parquet(

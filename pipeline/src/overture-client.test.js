@@ -35,6 +35,17 @@ test("buildQuery applies the Japan bbox, cafe categories, and confidence conditi
   assert.match(query, /confidence >= 0\.9/);
 });
 
+// duckdb CLIの`-json`出力は、STRUCT/LIST列を素のままSELECTすると非JSON文字列
+// (Python風のdict/list表記)になり、addresses等が配列として得られなくなる
+// (実データで確認済みのバグ)。to_json()で明示的にラップされていることを検証する。
+test("buildQuery wraps struct/list columns in to_json() for valid nested JSON output", () => {
+  const query = buildQuery({ release: RELEASE });
+  assert.match(query, /to_json\(names\) AS names/);
+  assert.match(query, /to_json\(categories\) AS categories/);
+  assert.match(query, /to_json\(brand\) AS brand/);
+  assert.match(query, /to_json\(addresses\) AS addresses/);
+});
+
 test("queryOverturePlaces returns records with parsed GeoJSON geometry", async () => {
   const execImpl = async () => [cafeRow()];
 
