@@ -5,6 +5,7 @@
   "description": "MapLibre GL JS v6を用いて日本全国のカフェ・喫茶店POIを表示するWebマップフロントエンド",
   "type": "module",
   "scripts": {
+    "build": "node scripts/build.js",
     "serve": "node server/serve.js",
     "test": "node --test"
   },

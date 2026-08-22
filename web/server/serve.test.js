@@ -71,3 +71,11 @@ test("serve returns 404 for a missing file and 400 for path traversal", async (t
   const traversal = await fetch(`${base}/..%2f..%2fserve.js`);
   assert.equal(traversal.status, 400);
 });
+
+test("serve responds with a JavaScript content type for .mjs files", async (t) => {
+  const base = await withTestServer(t, { "maplibre-gl.mjs": "export const x = 1;" });
+
+  const res = await fetch(`${base}/maplibre-gl.mjs`);
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get("content-type"), "text/javascript; charset=utf-8");
+});
