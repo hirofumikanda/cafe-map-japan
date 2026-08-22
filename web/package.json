@@ -1,0 +1,11 @@
+{
+  "name": "cafe-map-japan-web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "MapLibre GL JS v6を用いて日本全国のカフェ・喫茶店POIを表示するWebマップフロントエンド",
+  "type": "module",
+  "dependencies": {
+    "maplibre-gl": "^6.0.0",
+    "pmtiles": "^3.0.0"
+  }
+}

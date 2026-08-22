@@ -1,0 +1,13 @@
+{
+  "name": "cafe-map-japan-pipeline",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Overpass APIから日本全国のカフェ・喫茶店POIを取得し、GeoJSONを経てPMTiles(z10-14)へ変換するデータパイプライン",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "pmtiles": "^3.0.0"
+  }
+}
