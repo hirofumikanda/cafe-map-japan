@@ -37,10 +37,10 @@
 
 ## 7. ビューア: ポップアップへのconfidence・websites追加 (Issue #51)
 
-- [ ] 7.1 `web/src/main.js`の`buildCafePopupHtml`に、`properties.confidence`を百分率(`Math.round(confidence * 100)}%`)で表示する行を追加する(design.md Decision 8)。
-- [ ] 7.2 `web/src/main.js`の`buildCafePopupHtml`に、`properties.websites`(配列またはJSON文字列)を解釈して`http`/`https`のURLのみをリンク化して表示する行を追加する。パース失敗・非配列時は行を省略する(design.md Decision 8)。
-- [ ] 7.3 websitesの各リンクは`escapeHtml`でエスケープした上で`target="_blank" rel="noopener"`を付与する(design.md Decision 8)。
-- [ ] 7.4 `confidence`が百分率で表示されること、`websites`がリンクとして表示されること、`websites`を持たないPOIではリンクが表示されないこと、不正な`websites`値でもポップアップ全体が壊れないことを、ローカルサーバー上のブラウザ確認で検証する。
+- [x] 7.1 `web/src/main.js`の`buildCafePopupHtml`に、`properties.confidence`を百分率(`Math.round(confidence * 100)}%`)で表示する行を追加する(design.md Decision 8)。
+- [x] 7.2 `web/src/main.js`の`buildCafePopupHtml`に、`properties.websites`(配列またはJSON文字列)を解釈して`http`/`https`のURLのみをリンク化して表示する行を追加する。パース失敗・非配列時は行を省略する(design.md Decision 8)。
+- [x] 7.3 websitesの各リンクは`escapeHtml`でエスケープした上で`target="_blank" rel="noopener"`を付与する(design.md Decision 8)。
+- [x] 7.4 `confidence`が百分率で表示されること、`websites`がリンクとして表示されること、`websites`を持たないPOIではリンクが表示されないこと、不正な`websites`値でもポップアップ全体が壊れないことを、ローカルサーバー上のブラウザ確認で検証する。
 
 ## 8. ビューア: Overture Mapsの帰属表示 (Issue #52)
 
