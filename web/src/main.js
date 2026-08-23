@@ -23,6 +23,16 @@ const CAFE_SOURCE_LAYER = "cafe";
 // z14を超えるズームでは意図的にlayer側のmaxzoomを設定せず、ソースのオーバーズームで表示させ続ける。
 const CAFE_LAYER_MIN_ZOOM = 10;
 
+// spec: ズームレベルに応じたconfidenceしきい値以上のPOIのみを表示する
+// (z10-14: 0.99以上、z15: 0.97以上、z16: 0.95以上、z17以上: 0.90以上)。
+// `step`式でズームごとのしきい値を宣言的に切り替え、`confidence`プロパティと比較する
+// (design.md Decision 3)。ズーム変化時のJS側再評価(setFilter呼び直し)は不要。
+const CAFE_CONFIDENCE_FILTER = [
+  ">=",
+  ["get", "confidence"],
+  ["step", ["zoom"], 0.99, 15, 0.97, 16, 0.95, 17, 0.9],
+];
+
 const style = {
   version: 8,
   sources: {
@@ -139,6 +149,7 @@ map.on("load", () => {
     source: CAFE_SOURCE_ID,
     "source-layer": CAFE_SOURCE_LAYER,
     minzoom: CAFE_LAYER_MIN_ZOOM,
+    filter: CAFE_CONFIDENCE_FILTER,
     layout: {
       // spec: brand/operator/nameに基づき既知チェーンには専用アイコン、
       // それ以外には汎用アイコンを割り当てる(design.md 決定5、chains.js参照)。
