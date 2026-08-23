@@ -100,3 +100,65 @@ test("omits the brand property when the record has no brand", () => {
   assert.equal(features[0].properties.name, "個人経営のカフェ");
   assert.equal("brand" in features[0].properties, false);
 });
+
+test("keeps the confidence property on the converted feature", () => {
+  const records = [
+    {
+      id: "overture:place:confidence-check",
+      names: { primary: "確認用カフェ" },
+      categories: { primary: "cafe", alternate: [] },
+      addresses: [{ freeform: "京都市中京区1-1", country: "JP" }],
+      confidence: 0.97,
+      geometry: { type: "Point", coordinates: [135.7681, 35.0116] },
+    },
+  ];
+
+  const features = elementsToFeatures(records);
+
+  assert.equal(features[0].properties.confidence, 0.97);
+});
+
+test("keeps the websites property when the record has websites", () => {
+  const records = [
+    {
+      id: "overture:place:with-websites",
+      names: { primary: "ウェブサイトありカフェ" },
+      categories: { primary: "cafe", alternate: [] },
+      addresses: [{ freeform: "京都市中京区1-1", country: "JP" }],
+      confidence: 0.95,
+      websites: ["https://example.com/cafe"],
+      geometry: { type: "Point", coordinates: [135.7681, 35.0116] },
+    },
+  ];
+
+  const features = elementsToFeatures(records);
+
+  assert.deepEqual(features[0].properties.websites, ["https://example.com/cafe"]);
+});
+
+test("omits the websites property when the record has no websites", () => {
+  const records = [
+    {
+      id: "overture:place:no-websites",
+      names: { primary: "ウェブサイトなしカフェ" },
+      categories: { primary: "cafe", alternate: [] },
+      addresses: [{ freeform: "京都市中京区1-1", country: "JP" }],
+      confidence: 0.95,
+      geometry: { type: "Point", coordinates: [135.7681, 35.0116] },
+    },
+    {
+      id: "overture:place:empty-websites",
+      names: { primary: "空配列のカフェ" },
+      categories: { primary: "cafe", alternate: [] },
+      addresses: [{ freeform: "京都市中京区1-2", country: "JP" }],
+      confidence: 0.95,
+      websites: [],
+      geometry: { type: "Point", coordinates: [135.7682, 35.0117] },
+    },
+  ];
+
+  const features = elementsToFeatures(records);
+
+  assert.equal("websites" in features[0].properties, false);
+  assert.equal("websites" in features[1].properties, false);
+});
