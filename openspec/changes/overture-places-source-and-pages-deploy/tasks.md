@@ -39,9 +39,9 @@
 
 ## 7. 動作確認 (Issue #28)
 
-- [ ] 7.1 `main`ブランチへpushし、GitHub Actions上でビルド・デプロイが成功することを確認する
-- [ ] 7.2 GitHub PagesのURLでWebフロントエンドが表示され、`cafe.pmtiles`が正しく配信される(HTTP Rangeリクエストに対応する)ことを確認する
-- [ ] 7.3 `workflow_dispatch`による手動実行が成功することを確認する
+- [x] 7.1 `main`ブランチへpushし、GitHub Actions上でビルド・デプロイが成功することを確認する
+- [x] 7.2 GitHub PagesのURLでWebフロントエンドが表示され、`cafe.pmtiles`が正しく配信される(HTTP Rangeリクエストに対応する)ことを確認する
+- [x] 7.3 `workflow_dispatch`による手動実行が成功することを確認する
 
 ## 8. cafe-map-viewerポップアップのOverture対応 (Issue #31)
 
