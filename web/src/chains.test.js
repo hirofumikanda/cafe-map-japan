@@ -55,6 +55,46 @@ test("resolveChainIconId falls back to the generic icon when no properties are g
   assert.equal(resolveChainIconId({}), GENERIC_CAFE_ICON_ID);
 });
 
+test("resolveChainIconId matches Starbucks via its common abbreviation", () => {
+  const iconId = resolveChainIconId({ brand: "スタバ" });
+  assert.equal(iconId, "chain-starbucks");
+});
+
+test("resolveChainIconId matches Komeda Coffee via brand", () => {
+  const iconId = resolveChainIconId({ brand: "コメダ珈琲店" });
+  assert.equal(iconId, "chain-komeda");
+});
+
+test("resolveChainIconId matches Tully's Coffee via brand", () => {
+  const iconId = resolveChainIconId({ brand: "タリーズコーヒー" });
+  assert.equal(iconId, "chain-tullys");
+});
+
+test("resolveChainIconId matches Saint Marc Cafe via brand", () => {
+  const iconId = resolveChainIconId({ brand: "サンマルクカフェ" });
+  assert.equal(iconId, "chain-sanmarc");
+});
+
+test("resolveChainIconId matches Excelsior Caffe despite full/half-width spacing differences", () => {
+  const iconId = resolveChainIconId({ brand: "エクセルシオール　カフェ" });
+  assert.equal(iconId, "chain-excelsior");
+});
+
+test("resolveChainIconId matches Ueshima Coffee via brand", () => {
+  const iconId = resolveChainIconId({ brand: "上島珈琲店" });
+  assert.equal(iconId, "chain-ueshima");
+});
+
+test("resolveChainIconId matches Ginza Renoir via brand", () => {
+  const iconId = resolveChainIconId({ brand: "銀座ルノアール" });
+  assert.equal(iconId, "chain-renoir");
+});
+
+test("resolveChainIconId matches BECK'S COFFEE SHOP via its short name", () => {
+  const iconId = resolveChainIconId({ brand: "ベックスコーヒーショップ" });
+  assert.equal(iconId, "chain-becks");
+});
+
 test("buildIconImageExpression produces a case expression ending in the generic icon", () => {
   const expression = buildIconImageExpression();
   assert.equal(expression[0], "case");
