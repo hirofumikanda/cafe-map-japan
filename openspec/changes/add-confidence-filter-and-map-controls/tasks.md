@@ -1,7 +1,7 @@
 ## 1. パイプライン: confidence・websitesの取得 (Issue #45)
 
-- [ ] 1.1 `pipeline/src/overture-client.js`のクエリSELECT列に`to_json(websites) AS websites`を追加する(design.md Decision 2)。
-- [ ] 1.2 `pipeline/src/overture-client.test.js`に`websites`列がクエリ・レスポンスに含まれることを確認するテストを追加する。
+- [x] 1.1 `pipeline/src/overture-client.js`のクエリSELECT列に`to_json(websites) AS websites`を追加する(design.md Decision 2)。
+- [x] 1.2 `pipeline/src/overture-client.test.js`に`websites`列がクエリ・レスポンスに含まれることを確認するテストを追加する。
 
 ## 2. パイプライン: GeoJSON propertiesへの反映 (Issue #46)
 
