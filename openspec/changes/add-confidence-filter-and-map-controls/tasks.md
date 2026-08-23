@@ -11,10 +11,10 @@
 
 ## 3. パイプラインの再実行とタイル再生成 (Issue #47)
 
-- [ ] 3.1 `OVERTURE_RELEASE`を指定して`npm run fetch`を実行し、`confidence`・`websites`を含む`pipeline/out/cafe.geojson`を再生成する。
-- [ ] 3.2 `npm run build:tiles`を実行し、`pipeline/out/cafe.pmtiles`を再生成する。
-- [ ] 3.3 `npm run verify:tiles`で再生成したPMTilesを検証する。
-- [ ] 3.4 再生成した`cafe.pmtiles`を`web/public/cafe.pmtiles`へ反映する。
+- [x] 3.1 `OVERTURE_RELEASE`を指定して`npm run fetch`を実行し、`confidence`・`websites`を含む`pipeline/out/cafe.geojson`を再生成する。
+- [x] 3.2 `npm run build:tiles`を実行し、`pipeline/out/cafe.pmtiles`を再生成する。
+- [x] 3.3 `npm run verify:tiles`で再生成したPMTilesを検証する。
+- [x] 3.4 再生成した`cafe.pmtiles`を`web/public/cafe.pmtiles`へ反映する。
 
 ## 4. ビューア: ズーム連動confidenceフィルタ (Issue #48)
 
