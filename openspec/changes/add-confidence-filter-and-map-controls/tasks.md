@@ -23,9 +23,9 @@
 
 ## 5. ビューア: ナビゲーションコントロールとURLハッシュ (Issue #49)
 
-- [ ] 5.1 `web/src/main.js`で`NavigationControl`をmaplibre-glからインポートし、`map.addControl(new NavigationControl(), "top-right")`を追加する(design.md Decision 4)。
-- [ ] 5.2 `web/src/main.js`の`MapLibreMap`初期化オプションに`hash: true`を追加する(design.md Decision 5)。
-- [ ] 5.3 地図を操作するとURLハッシュが更新され、ハッシュ付きURLで開くと同じ位置・ズームで初期化されることをブラウザ確認で検証する。
+- [x] 5.1 `web/src/main.js`で`NavigationControl`をmaplibre-glからインポートし、`map.addControl(new NavigationControl(), "top-right")`を追加する(design.md Decision 4)。
+- [x] 5.2 `web/src/main.js`の`MapLibreMap`初期化オプションに`hash: true`を追加する(design.md Decision 5)。
+- [x] 5.3 地図を操作するとURLハッシュが更新され、ハッシュ付きURLで開くと同じ位置・ズームで初期化されることをブラウザ確認で検証する。
 
 ## 6. ビューア: 背景地図の透過度とPOIラベル (Issue #50)
 
