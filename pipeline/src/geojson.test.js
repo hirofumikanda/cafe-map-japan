@@ -45,6 +45,7 @@ test("converts Overture Places records into Point features and keeps name/brand 
   assert.equal(features[0].properties.name, "ドトールコーヒーショップ 新宿東口店");
   assert.equal(features[0].properties.brand, "ドトールコーヒー");
   assert.equal(features[0].properties.operator, undefined);
+  assert.equal(features[0].properties.address, "新宿1-1-1");
 
   assert.equal(features[1].id, "overture:place:kissa-guran");
   assert.deepEqual(features[1].geometry, {
@@ -52,6 +53,33 @@ test("converts Overture Places records into Point features and keeps name/brand 
     coordinates: [135.5023, 34.6937],
   });
   assert.equal(features[1].properties.name, "喫茶ぐらん");
+  assert.equal(features[1].properties.address, "大阪市北区1-1");
+});
+
+test("omits the address property when the record has no addresses", () => {
+  const records = [
+    {
+      id: "overture:place:no-address",
+      names: { primary: "住所不明のカフェ" },
+      categories: { primary: "cafe", alternate: [] },
+      addresses: [],
+      confidence: 0.9,
+      geometry: { type: "Point", coordinates: [135.7681, 35.0116] },
+    },
+    {
+      id: "overture:place:undefined-addresses",
+      names: { primary: "addresses未定義のカフェ" },
+      categories: { primary: "cafe", alternate: [] },
+      confidence: 0.9,
+      geometry: { type: "Point", coordinates: [135.77, 35.02] },
+    },
+  ];
+
+  const features = elementsToFeatures(records);
+
+  assert.equal(features.length, 2);
+  assert.equal("address" in features[0].properties, false);
+  assert.equal("address" in features[1].properties, false);
 });
 
 test("omits the brand property when the record has no brand", () => {

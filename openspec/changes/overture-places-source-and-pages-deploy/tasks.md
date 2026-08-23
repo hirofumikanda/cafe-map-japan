@@ -45,10 +45,10 @@
 
 ## 8. cafe-map-viewerポップアップのOverture対応 (Issue #31)
 
-- [ ] 8.1 `pipeline/src/geojson.js`の`elementsToFeatures`に、Overture Placesレコードの`addresses[0].freeform`相当を`address`プロパティとして追加する(design.md Decision 4)
-- [ ] 8.2 `pipeline/src/geojson.test.js`に`address`属性の変換を検証するテストケースを追加する
-- [ ] 8.3 `web/src/main.js`の`buildCafeAddress`・`ADDRESS_KEYS`を、OSMの`addr:*`タグ前提から`properties.address`を直接参照する実装に置き換える
-- [ ] 8.4 ローカルで生成したOverture由来のGeoJSON/PMTilesを使い、ポップアップに住所が表示されることを手動確認する
+- [x] 8.1 `pipeline/src/geojson.js`の`elementsToFeatures`に、Overture Placesレコードの`addresses[0].freeform`相当を`address`プロパティとして追加する(design.md Decision 4)
+- [x] 8.2 `pipeline/src/geojson.test.js`に`address`属性の変換を検証するテストケースを追加する
+- [x] 8.3 `web/src/main.js`の`buildCafeAddress`・`ADDRESS_KEYS`を、OSMの`addr:*`タグ前提から`properties.address`を直接参照する実装に置き換える
+- [x] 8.4 ローカルで生成したOverture由来のGeoJSON/PMTilesを使い、ポップアップに住所が表示されることを手動確認する
 
 ## 9. overture-client.jsのJSON出力バグ修正 (Issue #33)
 
