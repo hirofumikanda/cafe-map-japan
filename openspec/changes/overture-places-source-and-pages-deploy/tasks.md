@@ -25,8 +25,8 @@
 
 ## 5. ドキュメント更新 (Issue #26)
 
-- [ ] 5.1 `pipeline/README.md`を更新し、Overture Places取得手順・DuckDBのインストール方法・新しい環境変数を記載する
-- [ ] 5.2 ルートまたは`pipeline/README.md`に記載のOverpass関連の記述(旧取得元の説明)を削除・更新する
+- [x] 5.1 `pipeline/README.md`を更新し、Overture Places取得手順・DuckDBのインストール方法・新しい環境変数を記載する
+- [x] 5.2 ルートまたは`pipeline/README.md`に記載のOverpass関連の記述(旧取得元の説明)を削除・更新する
 
 ## 6. GitHub Actionsによるデプロイ自動化 (Issue #27)
 
