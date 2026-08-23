@@ -35,6 +35,8 @@ const CAFE_CONFIDENCE_FILTER = [
 
 const style = {
   version: 8,
+  // design.md 決定7: POIラベルのグリフをdemotiles.maplibre.orgのフォントサーバーから取得する。
+  glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
   sources: {
     osm: {
       type: "raster",
@@ -52,6 +54,8 @@ const style = {
       id: "osm",
       type: "raster",
       source: "osm",
+      // design.md 決定6: 背景地図を半透明(不透明度50%)にし、POIシンボル・ラベルを見やすくする。
+      paint: { "raster-opacity": 0.5 },
     },
   ],
 };
@@ -162,7 +166,16 @@ map.on("load", () => {
       // それ以外には汎用アイコンを割り当てる(design.md 決定5、chains.js参照)。
       "icon-image": buildIconImageExpression(),
       "icon-allow-overlap": true,
-      "icon-size": 0.6,
+      // ラベル追加に合わせてアイコンとラベルの合計占有面積を抑えるため縮小する(design.md 決定7)。
+      "icon-size": 0.5,
+      // spec: POIシンボルに店名等のラベルを表示する。ポップアップの名称フォールバック順
+      // (name→brand→operator)と揃える。アイコンの右への配置を優先し、他ラベルと衝突する
+      // 場合はアイコンの下にフォールバックする(design.md 決定7)。
+      "text-field": ["coalesce", ["get", "name"], ["get", "brand"], ["get", "operator"]],
+      "text-font": ["Noto Sans Regular"],
+      "text-size": 12,
+      "text-variable-anchor": ["right", "bottom"],
+      "text-radial-offset": 0.6,
     },
   });
 

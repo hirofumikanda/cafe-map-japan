@@ -29,11 +29,11 @@
 
 ## 6. ビューア: 背景地図の透過度とPOIラベル (Issue #50)
 
-- [ ] 6.1 `web/src/main.js`のstyle定義に`glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf"`を追加する(design.md Decision 7)。
-- [ ] 6.2 `web/src/main.js`の`osm`レイヤに`paint: { "raster-opacity": 0.5 }`を追加する(design.md Decision 6)。
-- [ ] 6.3 `web/src/main.js`のカフェレイヤのlayoutに`text-field`(name/brand/operatorのcoalesce)・`text-font: ["Noto Sans Regular"]`・`text-size`・`text-variable-anchor: ["right", "bottom"]`・`text-radial-offset`を追加する(design.md Decision 7)。
-- [ ] 6.4 ラベル追加に合わせて、カフェレイヤの`icon-size`を0.6から0.5程度へ縮小する(design.md Decision 7)。
-- [ ] 6.5 背景地図が半透明で表示されること、POIラベルがアイコンの右(衝突時は下)に表示されること、店名が無いPOIでブランド名がラベルとして表示されることを、ローカルサーバー上のブラウザ確認で検証する。
+- [x] 6.1 `web/src/main.js`のstyle定義に`glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf"`を追加する(design.md Decision 7)。
+- [x] 6.2 `web/src/main.js`の`osm`レイヤに`paint: { "raster-opacity": 0.5 }`を追加する(design.md Decision 6)。
+- [x] 6.3 `web/src/main.js`のカフェレイヤのlayoutに`text-field`(name/brand/operatorのcoalesce)・`text-font: ["Noto Sans Regular"]`・`text-size`・`text-variable-anchor: ["right", "bottom"]`・`text-radial-offset`を追加する(design.md Decision 7)。
+- [x] 6.4 ラベル追加に合わせて、カフェレイヤの`icon-size`を0.6から0.5程度へ縮小する(design.md Decision 7)。
+- [x] 6.5 背景地図が半透明で表示されること、POIラベルがアイコンの右(衝突時は下)に表示されること、店名が無いPOIでブランド名がラベルとして表示されることを、ローカルサーバー上のブラウザ確認で検証する。
 
 ## 7. ビューア: ポップアップへのconfidence・websites追加 (Issue #51)
 
