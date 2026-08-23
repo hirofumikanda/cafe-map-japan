@@ -1,4 +1,4 @@
-import { Map as MapLibreMap, Popup, addProtocol } from "maplibre-gl";
+import { Map as MapLibreMap, NavigationControl, Popup, addProtocol } from "maplibre-gl";
 import { Protocol as PMTilesProtocol } from "pmtiles";
 
 import { CHAIN_TABLE, GENERIC_CAFE_ICON_ID, buildIconImageExpression } from "./chains.js";
@@ -61,10 +61,17 @@ const map = new MapLibreMap({
   style,
   center: [138.0, 37.0],
   zoom: 5,
+  // design.md 決定5: 地図の中心座標・ズーム・回転・傾きをURLハッシュへ同期する。
+  // ハッシュ付きURLで開いた場合はその状態から初期化され、`center`/`zoom`は
+  // ハッシュが無い場合の初期表示用フォールバックとして使われる。
+  hash: true,
 });
 
 // ブラウザのdevtoolsから地図の状態を確認できるよう公開しておく(動作確認・デバッグ用)。
 window.cafeMap = map;
+
+// design.md 決定4: MapLibre標準のNavigationControl(ズーム・回転・傾き操作)を地図右上に表示する。
+map.addControl(new NavigationControl(), "top-right");
 
 // チェーン専用アイコン・汎用アイコンのスプライトを、canvasで生成してその場で登録する。
 // 公式ロゴを複製せず、色と図形(丸/四角/ひし形等)の組み合わせで識別できる
