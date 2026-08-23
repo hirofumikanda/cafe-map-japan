@@ -68,13 +68,30 @@ function fetchTileFeatureProperties(pmtilesPath, z, x, y) {
   return properties;
 }
 
+// MVTのproperties値はスカラー(string/number/boolean)のみを許容するため、GeoJSON側で
+// 配列を持つプロパティ(例: websites)はtippecanoeによりJSON文字列としてタイルへ格納される
+// (design.md Decision 1, add-confidence-filter-and-map-controls)。配列側の値との比較では
+// タイル側の文字列をパースしてから比較する。
+function valuesMatch(actualValue, expectedValue) {
+  if (Array.isArray(expectedValue)) {
+    let parsedActual;
+    try {
+      parsedActual = typeof actualValue === "string" ? JSON.parse(actualValue) : actualValue;
+    } catch {
+      return false;
+    }
+    return JSON.stringify(parsedActual) === JSON.stringify(expectedValue);
+  }
+  return actualValue === expectedValue;
+}
+
 function propertiesMatch(actual, expected) {
   const actualKeys = Object.keys(actual);
   const expectedKeys = Object.keys(expected);
   if (actualKeys.length !== expectedKeys.length) {
     return false;
   }
-  return expectedKeys.every((key) => actual[key] === expected[key]);
+  return expectedKeys.every((key) => valuesMatch(actual[key], expected[key]));
 }
 
 // spec: GeoJSON中の各POIが、変換後に対応する座標のz14タイル内にFeatureとして存在する。
