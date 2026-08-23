@@ -49,9 +49,15 @@ curl -i -r 0-99 http://localhost:8080/cafe.pmtiles
 
 ### 本番環境へのデプロイ
 
-本番環境のホスティング先は**GitHub Pages**に決定した(design.md Decision 3参照)。GitHub Pages(Fastly/Varnish CDN経由)は静的ファイルへのHTTP Rangeリクエストを標準でサポートしており、実ファイルへの`curl -r`検証で`206 Partial Content`・正しい`Content-Range`が返ることを確認済み。`public/`配下(`cafe.pmtiles`を含む)をそのままデプロイすれば要件を満たせる。
+本番環境のホスティング先は**GitHub Pages**に決定した(design.md Decision 3参照)。GitHub Pages(Fastly/Varnish CDN経由)は静的ファイルへのHTTP Rangeリクエストを標準でサポートしており、実ファイルへの`curl -r`検証で`206 Partial Content`・正しい`Content-Range`が返ることを確認済み。
 
-GitHub Pagesのプロジェクトサイトは`https://<user>.github.io/<repo>/`というサブパス配下で配信されるため、`cafe.pmtiles`やフロントエンド資産の参照はこのベースパスを前提とした相対パス/URLで組み立てる必要がある(Issue #5以降のフロントエンド実装で反映する)。`server/serve.js`はローカル開発・動作確認用であり、本番配信そのものを担うことは想定していない。
+デプロイは`.github/workflows/deploy-pages.yml`(GitHub Actions)により自動化されている(`overture-places-source-and-pages-deploy` design.md Decision 5)。`main`ブランチへのpush、またはActions画面からの手動実行(`workflow_dispatch`)をトリガーに、`web`ディレクトリで`npm ci`・`npm run build`を実行するビルドジョブと、それに続けて`public/`配下を`actions/upload-pages-artifact`・`actions/deploy-pages`でGitHub Pagesへ公開するデプロイジョブが実行される。ビルドジョブが失敗した場合、デプロイジョブは実行されない(`needs`による依存)。
+
+このワークフローは`web`のビルド・デプロイのみを行い、Overture Places取得・PMTiles生成(`pipeline`の実行)は含まない。そのため`public/cafe.pmtiles`はワークフロー実行前にリポジトリへコミットされている必要がある。データ更新時は、開発者がローカルで`pipeline`を実行して`cafe.pmtiles`を再生成し、`public/cafe.pmtiles`へコピーしてコミット・pushする(`pipeline/README.md`参照)。
+
+初回のみ、リポジトリのSettings > Pages > Source を **GitHub Actions** に設定する手動作業が必要(GitHub UI上の設定で、コードやワークフロー定義には含まれない)。
+
+GitHub Pagesのプロジェクトサイトは`https://<user>.github.io/<repo>/`というサブパス配下で配信されるため、`public/index.html`・`src/main.js`はいずれも相対パス(`./vendor/...`・`./main.js`、および`window.location.href`基準で解決する`cafe.pmtiles`のURL)でフロントエンド資産を参照する設計になっており、追加のbase path設定なしにサブパス配信へ対応できる。`server/serve.js`はローカル開発・動作確認用であり、本番配信そのものを担うことは想定していない。
 
 ## ディレクトリ構成
 
