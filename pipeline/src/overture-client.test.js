@@ -44,6 +44,7 @@ test("buildQuery wraps struct/list columns in to_json() for valid nested JSON ou
   assert.match(query, /to_json\(categories\) AS categories/);
   assert.match(query, /to_json\(brand\) AS brand/);
   assert.match(query, /to_json\(addresses\) AS addresses/);
+  assert.match(query, /to_json\(websites\) AS websites/);
 });
 
 test("queryOverturePlaces returns records with parsed GeoJSON geometry", async () => {
@@ -54,6 +55,14 @@ test("queryOverturePlaces returns records with parsed GeoJSON geometry", async (
   assert.equal(records.length, 1);
   assert.deepEqual(records[0].geometry, { type: "Point", coordinates: [139.7, 35.69] });
   assert.equal(records[0].names.primary, "ドトールコーヒーショップ 新宿店");
+});
+
+test("queryOverturePlaces returns records with the websites column", async () => {
+  const execImpl = async () => [cafeRow({ websites: ["https://example.com/doutor-shinjuku"] })];
+
+  const records = await queryOverturePlaces({ release: RELEASE, execImpl });
+
+  assert.deepEqual(records[0].websites, ["https://example.com/doutor-shinjuku"]);
 });
 
 test("queryOverturePlaces excludes records without a JP address", async () => {

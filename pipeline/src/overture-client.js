@@ -47,6 +47,7 @@ SELECT
   to_json(categories) AS categories,
   to_json(brand) AS brand,
   to_json(addresses) AS addresses,
+  to_json(websites) AS websites,
   confidence,
   ST_AsGeoJSON(geometry) AS geometry
 FROM read_parquet(
