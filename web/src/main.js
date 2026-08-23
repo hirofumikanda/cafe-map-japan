@@ -216,11 +216,40 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+// タイル上ではMVTがスカラー値しか持てないため、websitesは配列そのままではなくtippecanoeが
+// JSON文字列化した状態で届く(design.md Decision 1)。パースに失敗した場合・配列でない場合は
+// nullを返し、呼び出し側でwebsites行自体を省略するfail-safeとする(design.md Decision 8)。
+function parseWebsites(value) {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  if (typeof value !== "string") {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+// http/https以外のスキーム(javascript:等)をリンク化しないためのフィルタ(XSS対策、design.md Decision 8)。
+function buildCafeWebsiteLinks(properties) {
+  const websites = parseWebsites(properties.websites);
+  if (!websites) {
+    return [];
+  }
+  return websites.filter((url) => typeof url === "string" && /^https?:\/\//i.test(url));
+}
+
 // propertiesはOSMのタグ(利用者が編集可能な自由入力)に由来するため、HTMLへの埋め込み時は必ずエスケープする。
 function buildCafePopupHtml(properties) {
   const name = properties.name || properties.brand || properties.operator || "名称不明のカフェ・喫茶店";
   const brand = properties.brand;
   const address = buildCafeAddress(properties);
+  const confidence = properties.confidence;
+  const websiteLinks = buildCafeWebsiteLinks(properties);
 
   const rows = [];
   if (brand && brand !== name) {
@@ -228,6 +257,15 @@ function buildCafePopupHtml(properties) {
   }
   if (address) {
     rows.push(`<div class="cafe-popup-address">${escapeHtml(address)}</div>`);
+  }
+  if (typeof confidence === "number") {
+    rows.push(`<div class="cafe-popup-confidence">信頼度: ${Math.round(confidence * 100)}%</div>`);
+  }
+  if (websiteLinks.length > 0) {
+    const links = websiteLinks
+      .map((url) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>`)
+      .join("");
+    rows.push(`<div class="cafe-popup-websites">${links}</div>`);
   }
 
   return `<div class="cafe-popup"><div class="cafe-popup-name">${escapeHtml(name)}</div>${rows.join("")}</div>`;
