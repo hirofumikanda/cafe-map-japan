@@ -17,10 +17,12 @@ function buildTiles({ geojsonPath, pmtilesPath }) {
     `--layer=${SOURCE_LAYER}`,
     `--minimum-zoom=${MINIMUM_ZOOM}`,
     `--maximum-zoom=${MAXIMUM_ZOOM}`,
-    // spec: GeoJSON中の各POIが変換後もz14タイル内にFeatureとして存在しなければならない(SHALL)。
-    // tippecanoeのデフォルトのタイルサイズ/フィーチャ数上限による間引きを無効化し、POIが失われないようにする。
+    // spec: GeoJSON中の各POIが変換後もz10-z14の各タイル内にFeatureとして存在しなければならない(SHALL)。
+    // タイルサイズ/フィーチャ数上限による間引きに加え、ズームレベルごとの密度ベースの間引き(dot-density
+    // drop、デフォルトのdrop-rate=10)も無効化し、POIが失われないようにする。
     "--no-feature-limit",
     "--no-tile-size-limit",
+    "--drop-rate=0",
     geojsonPath,
   ];
 
