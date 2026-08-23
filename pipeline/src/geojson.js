@@ -54,6 +54,12 @@ export function elementsToFeatures(records) {
       properties.address = address;
     }
 
+    properties.confidence = record.confidence;
+
+    if (Array.isArray(record.websites) && record.websites.length > 0) {
+      properties.websites = record.websites;
+    }
+
     features.push({
       type: "Feature",
       id: record.id,

@@ -5,9 +5,9 @@
 
 ## 2. パイプライン: GeoJSON propertiesへの反映 (Issue #46)
 
-- [ ] 2.1 `pipeline/src/geojson.js`の`elementsToFeatures`で、`record.confidence`を`properties.confidence`として保持する。
-- [ ] 2.2 `pipeline/src/geojson.js`の`elementsToFeatures`で、`record.websites`が存在する場合に`properties.websites`として(配列のまま)保持し、存在しない場合はpropertyを省略する(design.md Decision 1)。
-- [ ] 2.3 `pipeline/src/geojson.test.js`に、confidenceが保持されるケース・websitesが保持されるケース・websites不在時に省略されるケースのテストを追加する。
+- [x] 2.1 `pipeline/src/geojson.js`の`elementsToFeatures`で、`record.confidence`を`properties.confidence`として保持する。
+- [x] 2.2 `pipeline/src/geojson.js`の`elementsToFeatures`で、`record.websites`が存在する場合に`properties.websites`として(配列のまま)保持し、存在しない場合はpropertyを省略する(design.md Decision 1)。
+- [x] 2.3 `pipeline/src/geojson.test.js`に、confidenceが保持されるケース・websitesが保持されるケース・websites不在時に省略されるケースのテストを追加する。
 
 ## 3. パイプラインの再実行とタイル再生成 (Issue #47)
 
