@@ -30,12 +30,12 @@
 
 ## 6. GitHub Actionsによるデプロイ自動化 (Issue #27)
 
-- [ ] 6.1 `.gitignore`を更新し、`web/public/cafe.pmtiles`はgitignore対象から外してコミット可能にする一方、`pipeline/out/`配下(`out/cafe.geojson`を含む中間生成物一式)は引き続きgit管理しないようにする
-- [ ] 6.2 ローカルで生成した`cafe.pmtiles`を`web/public/cafe.pmtiles`に配置し、コミットする
-- [ ] 6.3 `.github/workflows/deploy-pages.yml`を新設し、`main`へのpushと`workflow_dispatch`をトリガーに、`web`ディレクトリで`npm ci`・`npm run build`を実行するビルドジョブを定義する
-- [ ] 6.4 同ワークフローに、ビルドジョブに依存するデプロイジョブ(`actions/configure-pages`・`actions/upload-pages-artifact`・`actions/deploy-pages`、`pages: write`・`id-token: write`権限)を追加する
-- [ ] 6.5 GitHub Pages公開のためのビルド成果物パスをbase pathを考慮して`web/public`に設定する(GitHub Pagesのサブパス配信、web/README.md記載の既存注意点)
-- [ ] 6.6 `web/README.md`のデプロイ手順を、GitHub Actions経由の自動デプロイに書き換える(GitHub Pages側のSource設定をGitHub Actionsにする手順を含む)
+- [x] 6.1 `.gitignore`を更新し、`web/public/cafe.pmtiles`はgitignore対象から外してコミット可能にする一方、`pipeline/out/`配下(`out/cafe.geojson`を含む中間生成物一式)は引き続きgit管理しないようにする
+- [x] 6.2 ローカルで生成した`cafe.pmtiles`を`web/public/cafe.pmtiles`に配置し、コミットする
+- [x] 6.3 `.github/workflows/deploy-pages.yml`を新設し、`main`へのpushと`workflow_dispatch`をトリガーに、`web`ディレクトリで`npm ci`・`npm run build`を実行するビルドジョブを定義する
+- [x] 6.4 同ワークフローに、ビルドジョブに依存するデプロイジョブ(`actions/configure-pages`・`actions/upload-pages-artifact`・`actions/deploy-pages`、`pages: write`・`id-token: write`権限)を追加する
+- [x] 6.5 GitHub Pages公開のためのビルド成果物パスをbase pathを考慮して`web/public`に設定する(GitHub Pagesのサブパス配信、web/README.md記載の既存注意点)
+- [x] 6.6 `web/README.md`のデプロイ手順を、GitHub Actions経由の自動デプロイに書き換える(GitHub Pages側のSource設定をGitHub Actionsにする手順を含む)
 
 ## 7. 動作確認 (Issue #28)
 
