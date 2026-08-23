@@ -170,26 +170,10 @@ map.on("load", () => {
   });
 });
 
-// OSMの住所タグ(addr:*)を、日本の住所表記に近い順で連結する。
-// addr:fullがあればそれを優先し、なければ利用可能なタグのみを組み合わせる。
-const ADDRESS_KEYS = [
-  "addr:province",
-  "addr:prefecture",
-  "addr:city",
-  "addr:municipality",
-  "addr:suburb",
-  "addr:quarter",
-  "addr:neighbourhood",
-  "addr:street",
-  "addr:housenumber",
-];
-
+// Overture Placesの`address`プロパティ(addresses[0].freeform相当、design.md Decision 4)は
+// OSMの`addr:*`タグのような構造化要素を持たない整形済みの1行住所のため、そのまま利用する。
 function buildCafeAddress(properties) {
-  if (properties["addr:full"]) {
-    return properties["addr:full"];
-  }
-  const parts = ADDRESS_KEYS.map((key) => properties[key]).filter(Boolean);
-  return parts.length > 0 ? parts.join("") : null;
+  return properties.address || null;
 }
 
 function escapeHtml(value) {

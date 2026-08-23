@@ -17,6 +17,13 @@ function getBrandName(record) {
   return record.brand?.names?.primary;
 }
 
+// OvertureにはOSMの`addr:*`タグのような構造化された住所要素が無いため、
+// 整形済みの1行住所(`addresses[0].freeform`)をそのまま`address`として保持する
+// (design.md Decision 4)。
+function getAddress(record) {
+  return record.addresses?.[0]?.freeform;
+}
+
 // Overture Placesレコード(overture-client.jsの`queryOverturePlaces`が返す形)を
 // GeoJSON Point Featureへ変換する。既存のPMTiles変換・チェーン判定(web/src/chains.js)が
 // そのまま利用できるよう、`name`・`brand`をOSMタグ互換のproperties名で保持する
@@ -40,6 +47,11 @@ export function elementsToFeatures(records) {
     const brand = getBrandName(record);
     if (brand) {
       properties.brand = brand;
+    }
+
+    const address = getAddress(record);
+    if (address) {
+      properties.address = address;
     }
 
     features.push({
