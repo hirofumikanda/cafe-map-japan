@@ -181,6 +181,11 @@ map.on("load", () => {
       "text-size": 12,
       "text-variable-anchor": ["right", "bottom"],
       "text-radial-offset": 0.6,
+      // text-optionalの既定値はfalseで、その場合ラベルが衝突等で配置できないと
+      // icon-allow-overlap: trueを設定していてもアイコンごとシンボル全体が非表示になる。
+      // trueにすることで、ラベルが配置できない場合はラベルのみ省略しアイコンは表示され続ける
+      // (design.md 決定7、Issue #60の回帰修正)。
+      "text-optional": true,
     },
   });
 

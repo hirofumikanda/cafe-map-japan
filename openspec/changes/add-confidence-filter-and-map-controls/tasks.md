@@ -52,3 +52,9 @@
 
 - [x] 9.1 `web`の開発/配信手順(`web/README.md`参照)でローカル配信し、ナビゲーションコントロール・URLハッシュ・confidenceフィルタ・背景地図の透過度・POIラベル・ポップアップのconfidence/websites表示・Overture Mapsの帰属表示をブラウザで一通り確認する。
 - [x] 9.2 `pipeline`・`web`それぞれの既存テストスイートを実行し、リグレッションがないことを確認する。
+
+## 10. ビューア: POIラベル衝突時にアイコンごと非表示になる回帰の修正 (Issue #60)
+
+- [x] 10.1 `web/src/main.js`のカフェレイヤ(`CAFE_LAYER_ID`)のlayoutに`"text-optional": true`を追加し、ラベルが配置できない場合でもアイコンは表示され続けるようにする(design.md Decision 7)。
+- [x] 10.2 POI密集地(例: 蒲田駅周辺、z15)で、修正前は非表示だったPOIのアイコンが表示されるようになることをブラウザで確認する。
+- [x] 10.3 `cd web && npm test`で既存テストにリグレッションがないことを確認する。

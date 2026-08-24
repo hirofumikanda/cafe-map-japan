@@ -46,6 +46,7 @@ MapLibre標準の`NavigationControl`をそのまま使用し、独自のUIは作
   - `text-variable-anchor`: `["right", "bottom"]`(アイコンの右を優先し、他ラベルと衝突する場合はMapLibreが自動的に下へフォールバックする)
   - `text-radial-offset`: アイコン中心からのラベル距離(em単位)。`text-variable-anchor`使用時は`text-offset`ではなく`text-radial-offset`を使う(MapLibreの仕様上の組み合わせ)。
 - ラベル追加に伴い、既存の`icon-size: 0.6`を`0.5`程度へ縮小し、アイコンとラベルの合計占有面積を抑える。
+- `text-optional: true`を設定し、ラベルが他ラベルと衝突して配置できない場合でもアイコン自体は表示され続けるようにする。MapLibre/Mapboxスタイル仕様では`text-optional`の既定値は`false`であり、この場合`icon-allow-overlap: true`を設定していてもラベルを配置できないシンボルは**アイコンごと**非表示になる(`text-optional: true`にして初めて「ラベルは省略し、アイコンだけ表示する」動作になる)。POI密集地ではラベル同士の衝突が頻発するため、この設定を欠くとアイコンが大量に非表示になる回帰を招く(Issue #60で発見・修正)。
 - 代替案: 固定の`text-anchor`(例: 常に`"right"`または常に`"bottom"`)+`text-offset`。
 - 不採用理由: 固定アンカーでは衝突時にMapLibreがラベルを非表示にするだけで再配置されず、POI密集地でラベルが大量に欠落する。`text-variable-anchor`は候補アンカーの中から衝突しない位置を自動選択するため、ユーザーが指定した「右優先・収まらなければ下」という優先順位をそのまま表現でき、ラベルの可視率も向上する。
 
