@@ -50,5 +50,5 @@
 
 ## 9. 動作確認 (Issue #53)
 
-- [ ] 9.1 `web`の開発/配信手順(`web/README.md`参照)でローカル配信し、ナビゲーションコントロール・URLハッシュ・confidenceフィルタ・背景地図の透過度・POIラベル・ポップアップのconfidence/websites表示・Overture Mapsの帰属表示をブラウザで一通り確認する。
-- [ ] 9.2 `pipeline`・`web`それぞれの既存テストスイートを実行し、リグレッションがないことを確認する。
+- [x] 9.1 `web`の開発/配信手順(`web/README.md`参照)でローカル配信し、ナビゲーションコントロール・URLハッシュ・confidenceフィルタ・背景地図の透過度・POIラベル・ポップアップのconfidence/websites表示・Overture Mapsの帰属表示をブラウザで一通り確認する。
+- [x] 9.2 `pipeline`・`web`それぞれの既存テストスイートを実行し、リグレッションがないことを確認する。
