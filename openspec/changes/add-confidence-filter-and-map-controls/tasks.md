@@ -44,9 +44,9 @@
 
 ## 8. ビューア: Overture Mapsの帰属表示 (Issue #52)
 
-- [ ] 8.1 `web/src/main.js`に`OVERTURE_ATTRIBUTION`定数(Overture Maps Foundationへのクレジットを含むHTML文字列)を追加する(design.md Decision 9)。
-- [ ] 8.2 カフェベクタソース(`CAFE_SOURCE_ID`)の定義に`attribution: OVERTURE_ATTRIBUTION`を追加する(design.md Decision 9)。
-- [ ] 8.3 地図の帰属表示(AttributionControl)にOSMとOverture Maps Foundation両方のクレジットが表示されることを、ローカルサーバー上のブラウザ確認で検証する。
+- [x] 8.1 `web/src/main.js`に`OVERTURE_ATTRIBUTION`定数(Overture Maps Foundationへのクレジットを含むHTML文字列)を追加する(design.md Decision 9)。
+- [x] 8.2 カフェベクタソース(`CAFE_SOURCE_ID`)の定義に`attribution: OVERTURE_ATTRIBUTION`を追加する(design.md Decision 9)。
+- [x] 8.3 地図の帰属表示(AttributionControl)にOSMとOverture Maps Foundation両方のクレジットが表示されることを、ローカルサーバー上のブラウザ確認で検証する。
 
 ## 9. 動作確認 (Issue #53)
 

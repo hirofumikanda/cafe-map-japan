@@ -6,6 +6,10 @@ import { CHAIN_TABLE, GENERIC_CAFE_ICON_ID, buildIconImageExpression } from "./c
 const OSM_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
 
+// design.md Decision 9: カフェPOIデータの出典であるOverture Maps Foundationへの帰属表示。
+const OVERTURE_ATTRIBUTION =
+  '&copy; <a href="https://overturemaps.org/" target="_blank" rel="noopener">Overture Maps Foundation</a>';
+
 // design.md 決定3: pmtilesライブラリのProtocolをmaplibregl.addProtocolに登録し、
 // vector sourceを`pmtiles://<配信URL>/cafe.pmtiles`として参照する。
 const pmtilesProtocol = new PMTilesProtocol();
@@ -47,6 +51,7 @@ const style = {
     [CAFE_SOURCE_ID]: {
       type: "vector",
       url: `pmtiles://${CAFE_PMTILES_URL}`,
+      attribution: OVERTURE_ATTRIBUTION,
     },
   },
   layers: [
