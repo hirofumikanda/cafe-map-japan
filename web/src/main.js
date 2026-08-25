@@ -174,12 +174,12 @@ map.on("load", () => {
       // ラベル追加に合わせてアイコンとラベルの合計占有面積を抑えるため縮小する(design.md 決定7)。
       "icon-size": 0.5,
       // spec: POIシンボルに店名等のラベルを表示する。ポップアップの名称フォールバック順
-      // (name→brand→operator)と揃える。アイコンの右への配置を優先し、他ラベルと衝突する
-      // 場合はアイコンの下にフォールバックする(design.md 決定7)。
+      // (name→brand→operator)と揃える。アイコンの左への配置を優先し、他ラベルと衝突する
+      // 場合はアイコンの上にフォールバックする(design.md Decision 1)。
       "text-field": ["coalesce", ["get", "name"], ["get", "brand"], ["get", "operator"]],
       "text-font": ["Noto Sans Regular"],
       "text-size": 12,
-      "text-variable-anchor": ["right", "bottom"],
+      "text-variable-anchor": ["left", "top"],
       "text-radial-offset": 0.6,
       // text-optionalの既定値はfalseで、その場合ラベルが衝突等で配置できないと
       // icon-allow-overlap: trueを設定していてもアイコンごとシンボル全体が非表示になる。
