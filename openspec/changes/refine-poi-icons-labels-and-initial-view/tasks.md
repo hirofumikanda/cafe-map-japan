@@ -1,7 +1,7 @@
 ## 1. ビューア: POIラベルの配置優先度変更 (#65)
 
-- [ ] 1.1 `web/src/main.js`のカフェレイヤ(`CAFE_LAYER_ID`)のlayoutの`text-variable-anchor`を`["right", "bottom"]`から`["left", "top"]`に変更する(design.md Decision 1)。
-- [ ] 1.2 POI密集地で、ラベルがアイコンの左優先で表示され、衝突する場合はアイコンの上にフォールバックすることを、ローカルサーバー上のブラウザ確認で検証する。
+- [x] 1.1 `web/src/main.js`のカフェレイヤ(`CAFE_LAYER_ID`)のlayoutの`text-variable-anchor`を`["right", "bottom"]`から`["left", "top"]`に変更する(design.md Decision 1)。
+- [x] 1.2 POI密集地で、ラベルがアイコンの左優先で表示され、衝突する場合はアイコンの上にフォールバックすることを、ローカルサーバー上のブラウザ確認で検証する。
 
 ## 2. ビューア: チェーン・汎用アイコンの画像化 (#66)
 

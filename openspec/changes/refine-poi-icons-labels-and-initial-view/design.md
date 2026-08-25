@@ -2,7 +2,7 @@
 
 `web/src/main.js`は現在、以下の状態になっている(詳細はproposal.md参照)。
 
-- カフェレイヤ(`CAFE_LAYER_ID`)のlayoutで`text-variable-anchor: ["right", "bottom"]`を使用し、ラベルはアイコンの右優先・衝突時は下にフォールバックする。
+- カフェレイヤ(`CAFE_LAYER_ID`)のlayoutで`text-variable-anchor: ["right", "bottom"]`を使用している。MapLibre GL JSの`text-anchor`はアンカー点に最も近づけるテキスト側の基準辺を指定するプロパティであり、テキストは基準辺と逆方向に伸びるため、`"right"`は実際にはアイコンの**左**、`"bottom"`はアイコンの**上**にラベルを表示する(詳細はDecision 1参照)。つまり変更前のコードは、実際には「アイコンの左優先・衝突時は上にフォールバック」という表示になっている。
 - チェーン専用・汎用アイコンは、`createChainIcon()`がcanvasに図形(`circle`/`square`/`diamond`)と色を描画してその場で`ImageData`を生成し、`map.addImage()`で同期的に登録している(`CHAIN_TABLE`の各エントリが`shape`/`color`を持つ)。
 - `buildCafePopupHtml()`は`confidence`(0〜1の数値)を`Math.round(confidence * 100)}%`で百分率表示している。
 - `MapLibreMap`の初期化オプションは`center: [138.0, 37.0], zoom: 5`(日本全体が見渡せる広域表示)で、`hash: true`によりURLハッシュがあればそちらが優先される。
@@ -24,11 +24,27 @@
 
 ## Decisions
 
-### Decision 1: `text-variable-anchor`を`["left", "top"]`に変更し、`text-radial-offset`はそのまま流用する
-`text-radial-offset`はアンカー方向に依存せずアイコン中心からの距離を指定する値であるため、アンカーの候補を`["right", "bottom"]`から`["left", "top"]`に入れ替えるだけで「左優先・衝突時は上にフォールバック」という要求を満たせる。既存の`text-field`/`text-font`/`text-size`/`text-optional`は変更しない。
+### Decision 1: `text-variable-anchor`の値と実際の表示方向の対応関係、および本changeでの扱い
 
-- 代替案: `text-anchor`を固定値`"left"`にし、衝突時は非表示のままにする。
-- 不採用理由: `text-optional: true`と組み合わせても、固定アンカーでは衝突時にラベルが再配置されず単に非表示になるだけで、「上にフォールバックする」という要求を満たせない。`text-variable-anchor`はMapLibreが候補アンカーの中から衝突しない位置を自動選択するため、変更後も引き続きこの仕組みを使う。
+MapLibre GL JSの`text-anchor`/`text-variable-anchor`は「アンカー点(アイコン位置+`text-radial-offset`による移動先)に最も近づけるテキスト側の基準辺」を指定するプロパティであり、テキストはその基準辺からアンカー点の反対方向へ伸びる。そのため、値の名前が示す方向と実際にラベルが表示される方向は逆になる。
+
+ローカルサーバー上でPlaywright(ヘッドレスChromium)を用いて単一POIをアンカー値ごとに孤立表示させ実測した結果、対応関係は次の通りであることを確認した(Issue #65 / PR #70実装時の検証)。
+
+| anchor値 | 基準辺 | 実際のラベル表示方向 |
+|---|---|---|
+| `"left"` | テキストの左辺をアンカー点に一致させる | アイコンの**右** |
+| `"right"` | テキストの右辺をアンカー点に一致させる | アイコンの**左** |
+| `"top"` | テキストの上辺をアンカー点に一致させる | アイコンの**下** |
+| `"bottom"` | テキストの下辺をアンカー点に一致させる | アイコンの**上** |
+
+この対応関係に基づくと、変更前のコード`text-variable-anchor: ["right", "bottom"]`は、旧版のdesign.md/proposal.mdに記載していた「アイコンの右優先・衝突時は下にフォールバック」ではなく、実際には**「アイコンの左優先・衝突時は上にフォールバック」**という表示になっていた。これはspec.mdの新Requirement「POIラベルの配置」が求める挙動と一致しており、変更前のコードは既にこの要求を満たしていたことになる。
+
+**本changeでは、tasks.md 1.1の記述通り`text-variable-anchor`を`["left", "top"]`に変更する実装をIssue #65(PR #70)で完了させた。** しかし上記の対応関係により、この変更を適用すると実際の表示は**「アイコンの右優先・衝突時は下にフォールバック」**となり、spec.mdの新Requirement(左優先・上フォールバック)とは逆の結果になる。この矛盾は実装時に判明し、変更のオーナーに確認の上、「tasks.md 1.1の記述通りに実装する」方針として明示的に許容された(詳細はPR #70参照)。spec.mdの要求通りの見た目(左優先・上フォールバック)を得るには、`text-variable-anchor`を変更前の値`["right", "bottom"]`のまま維持する必要がある。
+
+既存の`text-field`/`text-font`/`text-size`/`text-optional`は変更しない。`text-radial-offset`はアンカー方向に依存せずアイコン中心からの距離を指定する値であるため、いずれのアンカー値の組み合わせでも流用できる。
+
+- 代替案: `text-anchor`を固定値`"right"`にし、衝突時は非表示のままにする。
+- 不採用理由: `text-optional: true`と組み合わせても、固定アンカーでは衝突時にラベルが再配置されず単に非表示になるだけで、「上にフォールバックする」という要求を満たせない。`text-variable-anchor`はMapLibreが候補アンカーの中から衝突しない位置を自動選択するため、この仕組みを使う。
 
 ### Decision 2: チェーン・汎用アイコンは`map.loadImage()` + `map.addImage()`で`public/img/`の画像を読み込み、`CHAIN_TABLE`に画像ファイル名を持たせる
 `createChainIcon()`によるcanvas描画・`ICON_DEFS`の`shape`/`color`を廃止し、代わりに次の構成にする。
@@ -79,3 +95,4 @@
 - [チェーンアイコンの読み込みが同期のcanvas描画から非同期の`map.loadImage()`に変わるため、`map.addLayer()`前に全アイコンの読み込みを`await`しないと、初回描画時にアイコン未登録のシンボルが一瞬空白になる可能性がある] → `map.on("load", ...)`内で`Promise.all`により全アイコンのロード・登録を待ってから`map.addLayer()`を呼び出す設計とし、`styleimagemissing`は保険的なフォールバックとして残す。
 - [`cup_green.png`/`cup_pink.png`をそれぞれ2チェーンに割り当てるため、同色チェーンのPOIがアイコンだけでは区別できない] → POIラベル(店名)が常に併記されるため実運用上の識別性は確保されている。将来的に色の重複が問題になった場合は、新規アイコン画像の追加を別changeで検討する。
 - [`public/img/`の画像ファイルは現時点でGit未追跡] → 実装タスクでコミット対象に加える。
+- [Decision 1で判明した通り、`text-variable-anchor: ["left", "top"]`への変更(Issue #65 / PR #70で実装済み)は、spec.mdの新Requirement「POIラベルの配置」(左優先・上フォールバック)とは逆の見た目(右優先・下フォールバック)になる] → 変更のオーナー確認の上、tasks.md 1.1の記述通りに実装する方針を採用済み。spec.md通りの見た目に揃える場合は、別途`text-variable-anchor`を`["right", "bottom"]`に戻す変更が必要(未実施)。
