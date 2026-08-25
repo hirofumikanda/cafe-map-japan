@@ -4,7 +4,7 @@
 
 ## What Changes
 
-- POIラベルの配置優先度(`text-variable-anchor`)を`["right", "bottom"]`から`["left", "top"]`に変更し、アイコンの左を優先、衝突時はアイコンの上にフォールバックするようにする。
+- POIラベルの配置優先度を指定する`text-variable-anchor`を`["right", "bottom"]`から`["left", "top"]`に変更する(Issue #65 / PR #70で実装済み)。ただし、MapLibre GL JSの実際の挙動(design.md Decision 1参照)により、この変更の結果、ラベルの実際の表示は変更前の「アイコンの左優先・衝突時は上にフォールバック」から「アイコンの右優先・衝突時は下にフォールバック」に変わる(spec.mdの新Requirementとは逆の結果になる、既知の問題)。
 - チェーン専用・汎用のPOIアイコンを、canvasで動的生成する図形+色から`web/public/img/`配下の画像ファイル(`cup_*.png`)に変更する。汎用アイコン(`GENERIC_CAFE_ICON_ID`)には`cup_black.png`を用い、既知チェーンには`cup_black.png`以外の色違い画像から、既存のブランドカラー(`CHAIN_TABLE`の`color`)に近い色を選んで割り当てる。
 - ポップアップの`confidence`表示を、百分率(例: `98%`)から、丸めや変換を行わず元の数値をそのまま表示する形式に変更する。
 - 地図の初期表示(URLハッシュ未指定時のフォールバック)を、ズームレベル5・日本全体表示からズームレベル10・皇居(東京都千代田区)周辺表示に変更する。
