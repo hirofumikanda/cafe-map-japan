@@ -82,77 +82,51 @@ window.cafeMap = map;
 // design.md 決定4: MapLibre標準のNavigationControl(ズーム・回転・傾き操作)を地図右上に表示する。
 map.addControl(new NavigationControl(), "top-right");
 
-// チェーン専用アイコン・汎用アイコンのスプライトを、canvasで生成してその場で登録する。
-// 公式ロゴを複製せず、色と図形(丸/四角/ひし形等)の組み合わせで識別できる
-// オリジナルのグリフとする(design.md 決定5)。
-const ICON_DEFS = [
-  { id: GENERIC_CAFE_ICON_ID, shape: "circle", color: "#6f4e37" },
-  ...CHAIN_TABLE.map((chain) => ({ id: chain.iconId, shape: chain.shape, color: chain.color })),
+// チェーン専用アイコン・汎用アイコンは、`web/public/img/`配下の色分けカップ画像
+// (`cup_*.png`)を`map.loadImage()`で読み込み`map.addImage()`で登録する(design.md Decision 2)。
+// 未分類POIに割り当てる汎用アイコンの画像ファイル名。
+const GENERIC_CAFE_ICON_IMAGE = "cup_black.png";
+
+// アイコンID -> 画像ファイル名(`web/public/img/`配下)の対応表。
+const ICON_IMAGE_DEFS = [
+  { id: GENERIC_CAFE_ICON_ID, image: GENERIC_CAFE_ICON_IMAGE },
+  ...CHAIN_TABLE.map((chain) => ({ id: chain.iconId, image: chain.image })),
 ];
 
-function createChainIcon({ shape, color, size = 32 }) {
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-  const center = size / 2;
-  const radius = size / 2 - 2;
-
-  ctx.beginPath();
-  switch (shape) {
-    case "square": {
-      const half = radius * 0.85;
-      const corner = 4;
-      ctx.moveTo(center - half + corner, center - half);
-      ctx.arcTo(center + half, center - half, center + half, center + half, corner);
-      ctx.arcTo(center + half, center + half, center - half, center + half, corner);
-      ctx.arcTo(center - half, center + half, center - half, center - half, corner);
-      ctx.arcTo(center - half, center - half, center + half, center - half, corner);
-      ctx.closePath();
-      break;
-    }
-    case "diamond": {
-      ctx.moveTo(center, center - radius);
-      ctx.lineTo(center + radius, center);
-      ctx.lineTo(center, center + radius);
-      ctx.lineTo(center - radius, center);
-      ctx.closePath();
-      break;
-    }
-    case "circle":
-    default:
-      ctx.arc(center, center, radius, 0, Math.PI * 2);
-      break;
-  }
-
-  ctx.fillStyle = color;
-  ctx.fill();
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "#ffffff";
-  ctx.stroke();
-  return ctx.getImageData(0, 0, size, size);
+// 画像は`public/`がWebルートとして配信されるため`img/<file>`で解決できる。
+// `window.location.href`基準で解決し、GitHub Pagesのサブパス配信にも対応する。
+function iconImageUrl(file) {
+  return new URL(`img/${file}`, window.location.href).href;
 }
 
-function registerCafeIcons() {
-  for (const icon of ICON_DEFS) {
-    if (!map.hasImage(icon.id)) {
-      map.addImage(icon.id, createChainIcon(icon));
-    }
+// 指定アイコンが未登録なら、`map.loadImage()`で画像を取得して`map.addImage()`で登録する。
+async function loadAndAddCafeIcon({ id, image }) {
+  if (map.hasImage(id)) {
+    return;
+  }
+  const { data } = await map.loadImage(iconImageUrl(image));
+  if (!map.hasImage(id)) {
+    map.addImage(id, data);
   }
 }
 
-// スタイル読み込み完了を待たずにレイヤへ`icon-image`参照を追加すると、初回描画時に
-// アイコン未登録のままレンダリングされてしまう(styleimagemissingの解決が非同期のため)。
-// そのためレイヤ追加より前に、この時点で同期的にアイコンを登録しておく。
+// スタイル再読み込み等でアイコンが未登録のまま参照された場合のフォールバック。
+// `map.loadImage()`のPromiseを待って`map.addImage()`する(design.md Decision 2)。
+// MapLibreは`styleimagemissing`ハンドラが後から`addImage`しても該当シンボルを再描画する。
 map.on("styleimagemissing", (e) => {
-  const icon = ICON_DEFS.find((def) => def.id === e.id);
-  if (icon && !map.hasImage(icon.id)) {
-    map.addImage(icon.id, createChainIcon(icon));
+  const icon = ICON_IMAGE_DEFS.find((def) => def.id === e.id);
+  if (!icon) {
+    return;
   }
+  loadAndAddCafeIcon(icon).catch((err) => {
+    console.error(`アイコン画像の読み込みに失敗しました: ${icon.image}`, err);
+  });
 });
 
-map.on("load", () => {
-  registerCafeIcons();
+map.on("load", async () => {
+  // アイコンの読み込みが非同期になったため、レイヤ追加より前に全アイコン分を
+  // `Promise.all`で並行ロード・登録し、初回描画時のシンボル欠落を防ぐ(design.md Decision 2)。
+  await Promise.all(ICON_IMAGE_DEFS.map((icon) => loadAndAddCafeIcon(icon)));
 
   // spec: PMTilesの生成ズーム範囲(z10-14)を外れるズームレベルでは、
   // オーバーズームまたは非表示によって適切に扱わなければならない(SHALL)。
