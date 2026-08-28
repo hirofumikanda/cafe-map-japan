@@ -5,12 +5,12 @@
 
 ## 2. ビューア: チェーン・汎用アイコンの画像化 (#66)
 
-- [ ] 2.1 `web/public/img/cup_*.png`(9ファイル)をGitに追加する。
-- [ ] 2.2 `web/src/chains.js`の`CHAIN_TABLE`の各エントリから`shape`/`color`フィールドを削除し、design.md Decision 3の対応表に従って`image`フィールド(画像ファイル名)を追加する。
-- [ ] 2.3 `web/src/main.js`に汎用アイコン(`GENERIC_CAFE_ICON_ID`)用の画像ファイル名(`cup_black.png`)を定義する。
-- [ ] 2.4 `web/src/main.js`の`createChainIcon`・canvas描画によるアイコン生成処理を削除し、`map.loadImage()`で`web/public/img/`配下の画像を読み込んで`map.addImage()`に登録する処理に置き換える(design.md Decision 2)。`map.on("load", ...)`内で全アイコン分を`Promise.all`により読み込んでから`map.addLayer(...)`を呼び出す。
-- [ ] 2.5 `styleimagemissing`ハンドラを、`map.loadImage()`のPromiseを待って`map.addImage()`する非同期実装に更新する(design.md Decision 2)。
-- [ ] 2.6 既知チェーンのPOIが割り当てられた画像アイコンで、未分類のPOIが`cup_black.png`で表示されることを、ローカルサーバー上のブラウザ確認で検証する。
+- [x] 2.1 `web/public/img/cup_*.png`(12ファイル)をGitに追加する。
+- [x] 2.2 `web/src/chains.js`の`CHAIN_TABLE`の各エントリから`shape`/`color`フィールドを削除し、design.md Decision 3の対応表に従って`image`フィールド(画像ファイル名)を追加する。
+- [x] 2.3 `web/src/main.js`に汎用アイコン(`GENERIC_CAFE_ICON_ID`)用の画像ファイル名(`cup_black.png`)を定義する。
+- [x] 2.4 `web/src/main.js`の`createChainIcon`・canvas描画によるアイコン生成処理を削除し、`map.loadImage()`で`web/public/img/`配下の画像を読み込んで`map.addImage()`に登録する処理に置き換える(design.md Decision 2)。`map.on("load", ...)`内で全アイコン分を`Promise.all`により読み込んでから`map.addLayer(...)`を呼び出す。
+- [x] 2.5 `styleimagemissing`ハンドラを、`map.loadImage()`のPromiseを待って`map.addImage()`する非同期実装に更新する(design.md Decision 2)。
+- [x] 2.6 既知チェーンのPOIが割り当てられた画像アイコンで、未分類のPOIが`cup_black.png`で表示されることを、ローカルサーバー上のブラウザ確認で検証する。
 
 ## 3. ビューア: ポップアップのconfidence表示形式変更 (#67)
 

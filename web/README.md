@@ -62,8 +62,8 @@ GitHub Pagesのプロジェクトサイトは`https://<user>.github.io/<repo>/`�
 ## ディレクトリ構成
 
 - `src/`: 地図初期化・レイヤ定義・ポップアップ・アイコン判定ロジックを配置する(`npm run build`で`public/`へコピーされる)。
-  - `main.js`: MapLibre GL JS v6で地図を初期化し、OpenStreetMap Standardを背景地図として表示する。`pmtiles`の`Protocol`を`addProtocol`に登録し、配信されている`cafe.pmtiles`をvector source(`pmtiles://`)として読み込み、`cafe`レイヤ(symbol)としてPOIを表示する。POIシンボルのクリックで店名・ブランド・住所等のプロパティをポップアップ表示する。チェーン専用・汎用アイコンをcanvasで生成し、`chains.js`の照合テーブルから組み立てた`case`式で`icon-image`を切り替える。
-  - `chains.js`: 既知チェーン名(ドトール、ベローチェ等)とアイコンID・図形・色を対応付ける照合テーブル、ブランド名表記ゆれ(全角/半角、法人格の有無等)を吸収する正規化・一致判定ロジック、MapLibreの`icon-image`用`case`式を組み立てる関数を提供する。新しいチェーンを追加する場合は`CHAIN_TABLE`にエントリを1件追加するだけでよい。
-- `public/`: 静的配信するHTML、アイコンスプライト、`pipeline`が生成する`cafe.pmtiles`を配置する。`vendor/`と`*.js`は`npm run build`の生成物。
+  - `main.js`: MapLibre GL JS v6で地図を初期化し、OpenStreetMap Standardを背景地図として表示する。`pmtiles`の`Protocol`を`addProtocol`に登録し、配信されている`cafe.pmtiles`をvector source(`pmtiles://`)として読み込み、`cafe`レイヤ(symbol)としてPOIを表示する。POIシンボルのクリックで店名・ブランド・住所等のプロパティをポップアップ表示する。チェーン専用・汎用アイコンは`public/img/`配下の色分けカップ画像(`cup_*.png`)を`map.loadImage()`で読み込んで`map.addImage()`で登録し、`chains.js`の照合テーブルから組み立てた`case`式で`icon-image`を切り替える。
+  - `chains.js`: 既知チェーン名(ドトール、ベローチェ等)とアイコンID・アイコン画像ファイル名を対応付ける照合テーブル、ブランド名表記ゆれ(全角/半角、法人格の有無等)を吸収する正規化・一致判定ロジック、MapLibreの`icon-image`用`case`式を組み立てる関数を提供する。新しいチェーンを追加する場合は`CHAIN_TABLE`にエントリを1件追加するだけでよい。
+- `public/`: 静的配信するHTML、POIアイコン画像(`img/cup_*.png`)、`pipeline`が生成する`cafe.pmtiles`を配置する。`vendor/`と`*.js`は`npm run build`の生成物。
 - `scripts/build.js`: `npm run build`の実体(vendorアセットのコピー、`src/`スクリプトのコピー)。
 - `server/serve.js`: `public/`をHTTP Range対応で配信する開発用静的サーバー(`npm run serve`)。

@@ -7,7 +7,7 @@
 - `buildCafePopupHtml()`は`confidence`(0〜1の数値)を`Math.round(confidence * 100)}%`で百分率表示している。
 - `MapLibreMap`の初期化オプションは`center: [138.0, 37.0], zoom: 5`(日本全体が見渡せる広域表示)で、`hash: true`によりURLハッシュがあればそちらが優先される。
 
-`web/public/img/`には`cup_black.png`を含む9色のカップアイコン画像(32x32 PNG)が既に配置されている(現時点でGit未追跡)。本changeはこれらの画像を使ってチェーンアイコンの表示方式を差し替える。
+`web/public/img/`には`cup_black.png`(汎用)を含む12色のカップアイコン画像(32x32 PNG)が配置されている。本changeはこれらの画像を使ってチェーンアイコンの表示方式を差し替える。
 
 ## Goals / Non-Goals
 
@@ -60,26 +60,26 @@ MapLibre GL JSの`text-anchor`/`text-variable-anchor`は「アンカー点(ア�
 - 代替案B: 画像をスプライトシート化して`style.sprite`で一括指定する。
 - 不採用理由B: 現状10種類程度のアイコンであれば個別`loadImage`で十分であり、スプライトシート生成のビルド手順を追加するコストに見合わない。
 
-### Decision 3: チェーンごとの画像色は、既存の`CHAIN_TABLE.color`(ブランドカラー)に最も近い色味の`cup_*.png`を割り当てる
-`public/img/`には`cup_black`(汎用専用)を除き8色(`blue`/`brown`/`green`/`orange`/`pink`/`red`/`water`/`yellow`)しかなく、`CHAIN_TABLE`には10チェーンあるため、色の重複は避けられない。既存の`color`(hexコード)を手がかりに、色相が近いものを機械的に割り当てる。
+### Decision 3: チェーンごとに固有の`cup_*.png`を1枚ずつ割り当てる
+`public/img/`には`cup_black`(汎用専用)を除き、`blue`/`brown`/`darkbrown`/`darkred`/`gold`/`green`/`orange`/`pink`/`red`/`water`/`yellow`の11色のカップ画像がある。`CHAIN_TABLE`の10チェーンそれぞれに、重複しないよう固有の画像を1枚ずつ割り当てる(変更のオーナー指定による対応)。
 
-| チェーン(id) | 既存color | 割り当てるimage |
-|---|---|---|
-| doutor | `#c8102e`(赤) | `cup_red.png` |
-| veloce | `#1b7a3d`(緑) | `cup_green.png` |
-| starbucks | `#00704a`(緑がかった青緑) | `cup_water.png` |
-| komeda | `#8a1c1c`(マルーン) | `cup_brown.png` |
-| tullys | `#00543d`(緑) | `cup_green.png` |
-| sanmarc | `#f8b400`(アンバー) | `cup_yellow.png` |
-| excelsior | `#6a3d9a`(紫) | `cup_pink.png` |
-| ueshima | `#b8860b`(ダークゴールデンロッド) | `cup_orange.png` |
-| renoir | `#1a2b6d`(ネイビー) | `cup_blue.png` |
-| becks | `#c2185b`(マゼンタ/ピンク) | `cup_pink.png` |
+| チェーン(id) | 割り当てるimage |
+|---|---|
+| doutor | `cup_yellow.png` |
+| veloce | `cup_red.png` |
+| starbucks | `cup_green.png` |
+| komeda | `cup_orange.png` |
+| tullys | `cup_gold.png` |
+| sanmarc | `cup_darkred.png` |
+| excelsior | `cup_blue.png` |
+| ueshima | `cup_brown.png` |
+| renoir | `cup_darkbrown.png` |
+| becks | `cup_pink.png` |
 
-`veloce`/`tullys`が`green`、`excelsior`/`becks`が`pink`で重複するが、POIラベル(店名)が併記されるため識別性は損なわれない。
+全チェーンに固有の画像が割り当たるため、アイコンだけでチェーンを区別できる(`cup_water.png`はいずれのチェーンにも割り当てず、汎用は引き続き`cup_black.png`)。
 
-- 代替案: 色の重複を避けるため、一部チェーンにアイコンではなく異なる形状のバッジ等を追加する。
-- 不採用理由: 画像アセットが色違いのみで用意されており、形状バリエーションの追加は本changeのスコープ(既存画像の活用)を超える。
+- 代替案: 既存のブランドカラー(`CHAIN_TABLE.color`)に色相が近い画像を機械的に割り当てる。
+- 不採用理由: 用意されている画像色数がチェーン数を下回っていた当初は色の重複が避けられなかったが、画像アセットが追加され全チェーンに固有色を割り当てられるようになったため、変更のオーナー指定の対応表を採用する。
 
 ### Decision 4: confidenceは丸め・変換を行わず、元の数値をそのまま表示する
 `buildCafePopupHtml()`内の`` `信頼度: ${Math.round(confidence * 100)}%` ``を`` `信頼度: ${confidence}` ``に変更する(テンプレートリテラル内での暗黙の文字列化により、`confidence`の数値がそのまま埋め込まれる)。百分率変換・小数点以下の丸めは一切行わない。
@@ -93,6 +93,6 @@ MapLibre GL JSの`text-anchor`/`text-variable-anchor`は「アンカー点(ア�
 ## Risks / Trade-offs
 
 - [チェーンアイコンの読み込みが同期のcanvas描画から非同期の`map.loadImage()`に変わるため、`map.addLayer()`前に全アイコンの読み込みを`await`しないと、初回描画時にアイコン未登録のシンボルが一瞬空白になる可能性がある] → `map.on("load", ...)`内で`Promise.all`により全アイコンのロード・登録を待ってから`map.addLayer()`を呼び出す設計とし、`styleimagemissing`は保険的なフォールバックとして残す。
-- [`cup_green.png`/`cup_pink.png`をそれぞれ2チェーンに割り当てるため、同色チェーンのPOIがアイコンだけでは区別できない] → POIラベル(店名)が常に併記されるため実運用上の識別性は確保されている。将来的に色の重複が問題になった場合は、新規アイコン画像の追加を別changeで検討する。
+- [チェーン数(10)に対して十分な色数の画像アセットが必要] → `cup_darkbrown`/`cup_darkred`/`cup_gold`の画像追加により、全10チェーンへ固有色を1枚ずつ割り当てられるようになった(Decision 3)。
 - [`public/img/`の画像ファイルは現時点でGit未追跡] → 実装タスクでコミット対象に加える。
 - [Decision 1で判明した通り、`text-variable-anchor: ["left", "top"]`への変更(Issue #65 / PR #70で実装済み)は、spec.mdの新Requirement「POIラベルの配置」(左優先・上フォールバック)とは逆の見た目(右優先・下フォールバック)になる] → 変更のオーナー確認の上、tasks.md 1.1の記述通りに実装する方針を採用済み。spec.md通りの見た目に揃える場合は、別途`text-variable-anchor`を`["right", "bottom"]`に戻す変更が必要(未実施)。
