@@ -5,7 +5,7 @@
 
 ## 2. ビューア: チェーン・汎用アイコンの画像化 (#66)
 
-- [x] 2.1 `web/public/img/cup_*.png`(9ファイル)をGitに追加する。
+- [x] 2.1 `web/public/img/cup_*.png`(12ファイル)をGitに追加する。
 - [x] 2.2 `web/src/chains.js`の`CHAIN_TABLE`の各エントリから`shape`/`color`フィールドを削除し、design.md Decision 3の対応表に従って`image`フィールド(画像ファイル名)を追加する。
 - [x] 2.3 `web/src/main.js`に汎用アイコン(`GENERIC_CAFE_ICON_ID`)用の画像ファイル名(`cup_black.png`)を定義する。
 - [x] 2.4 `web/src/main.js`の`createChainIcon`・canvas描画によるアイコン生成処理を削除し、`map.loadImage()`で`web/public/img/`配下の画像を読み込んで`map.addImage()`に登録する処理に置き換える(design.md Decision 2)。`map.on("load", ...)`内で全アイコン分を`Promise.all`により読み込んでから`map.addLayer(...)`を呼び出す。
