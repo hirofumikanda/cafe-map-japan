@@ -243,7 +243,8 @@ function buildCafePopupHtml(properties) {
     rows.push(`<div class="cafe-popup-address">${escapeHtml(address)}</div>`);
   }
   if (typeof confidence === "number") {
-    rows.push(`<div class="cafe-popup-confidence">信頼度: ${Math.round(confidence * 100)}%</div>`);
+    // spec: confidenceは丸め・変換を行わず、元の数値をそのまま表示する(design.md Decision 4)。
+    rows.push(`<div class="cafe-popup-confidence">信頼度: ${confidence}</div>`);
   }
   if (websiteLinks.length > 0) {
     const links = websiteLinks
