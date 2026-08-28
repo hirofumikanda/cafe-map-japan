@@ -68,8 +68,9 @@ const style = {
 const map = new MapLibreMap({
   container: "map",
   style,
-  center: [138.0, 37.0],
-  zoom: 5,
+  // design.md Decision 5: ハッシュ無し時の初期表示は皇居(東京都千代田区)周辺・ズームレベル10。
+  center: [139.7528, 35.6852],
+  zoom: 10,
   // design.md 決定5: 地図の中心座標・ズーム・回転・傾きをURLハッシュへ同期する。
   // ハッシュ付きURLで開いた場合はその状態から初期化され、`center`/`zoom`は
   // ハッシュが無い場合の初期表示用フォールバックとして使われる。
