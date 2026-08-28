@@ -14,8 +14,8 @@
 
 ## 3. ビューア: ポップアップのconfidence表示形式変更 (#67)
 
-- [ ] 3.1 `web/src/main.js`の`buildCafePopupHtml`のconfidence表示を、百分率(`Math.round(confidence * 100)}%`)から、丸めや変換を行わない元の数値のまま表示する形式に変更する(design.md Decision 4)。
-- [ ] 3.2 confidenceが元の数値のまま(丸めずに)表示されることを、ローカルサーバー上のブラウザ確認で検証する。
+- [x] 3.1 `web/src/main.js`の`buildCafePopupHtml`のconfidence表示を、百分率(`Math.round(confidence * 100)}%`)から、丸めや変換を行わない元の数値のまま表示する形式に変更する(design.md Decision 4)。
+- [x] 3.2 confidenceが元の数値のまま(丸めずに)表示されることを、ローカルサーバー上のブラウザ確認で検証する。
 
 ## 4. ビューア: 地図の初期表示位置変更 (#68)
 
