@@ -2,6 +2,7 @@ import { Map as MapLibreMap, NavigationControl, Popup, addProtocol } from "mapli
 import { Protocol as PMTilesProtocol } from "pmtiles";
 
 import {
+  CHAIN_FILTER_OPTIONS,
   CHAIN_TABLE,
   GENERIC_CAFE_ICON_ID,
   buildChainIdExpression,
@@ -67,6 +68,63 @@ function applyChainFilter(value) {
   map.setFilter(CAFE_LAYER_ID, buildCafeFilter(value));
 }
 
+// design.md Decision 3 / 4: 表示するチェーンを絞り込むプルダウンをMapLibreの`IControl`として
+// `top-left`に追加する。ネイティブ`<select>`をベースに、閉じた状態の見た目のみを
+// `index.html`の`<style>`(`.chain-filter-ctrl`)でカスタムする。開いた状態(選択肢リスト)は
+// OSネイティブのピッカーに委ね、タッチ操作・キーボード操作・スクリーンリーダー対応を標準で得る。
+const CHAIN_FILTER_LABEL_ID = "chain-filter-select-label";
+const CHAIN_FILTER_SELECT_ID = "chain-filter-select";
+
+class ChainFilterControl {
+  constructor(onChange) {
+    this._onChange = onChange;
+  }
+
+  onAdd() {
+    const container = document.createElement("div");
+    container.className = "maplibregl-ctrl chain-filter-ctrl";
+
+    // スクリーンリーダー用のラベル。`.visually-hidden`で視覚的には隠し、`for`で`<select>`に紐付ける。
+    const label = document.createElement("label");
+    label.className = "visually-hidden";
+    label.id = CHAIN_FILTER_LABEL_ID;
+    label.setAttribute("for", CHAIN_FILTER_SELECT_ID);
+    label.textContent = "表示するチェーン店を絞り込む";
+
+    const select = document.createElement("select");
+    select.id = CHAIN_FILTER_SELECT_ID;
+    for (const option of CHAIN_FILTER_OPTIONS) {
+      const optionEl = document.createElement("option");
+      optionEl.value = option.value;
+      optionEl.textContent = option.label;
+      select.append(optionEl);
+    }
+    // design.md Non-Goals: 選択状態は永続化しないため、初期選択は常に「すべて」。
+    select.value = "all";
+    select.addEventListener("change", () => {
+      this._onChange(select.value);
+    });
+
+    // design.md Decision 3: コントローラDOM上のポインタ/ホイール系イベントの伝播を止め、
+    // 地図のドラッグ・ダブルクリックズーム・ホイールズーム・タッチジェスチャと干渉させない。
+    for (const type of ["mousedown", "dblclick", "wheel", "touchstart"]) {
+      container.addEventListener(type, (event) => {
+        event.stopPropagation();
+      });
+    }
+
+    container.append(label, select);
+    this._container = container;
+    return container;
+  }
+
+  onRemove() {
+    this._container?.remove();
+    this._container = undefined;
+  }
+}
+
+
 const style = {
   version: 8,
   // design.md 決定7: POIラベルのグリフをdemotiles.maplibre.orgのフォントサーバーから取得する。
@@ -109,11 +167,15 @@ const map = new MapLibreMap({
 
 // ブラウザのdevtoolsから地図の状態を確認できるよう公開しておく(動作確認・デバッグ用)。
 window.cafeMap = map;
-// チェーン絞り込みコントロール(Issue #78)実装前でも動作確認できるよう公開する。
+// チェーン絞り込みコントロールと同じ適用処理を、devtoolsからも呼べるよう公開する。
 window.applyChainFilter = applyChainFilter;
 
 // design.md 決定4: MapLibre標準のNavigationControl(ズーム・回転・傾き操作)を地図右上に表示する。
 map.addControl(new NavigationControl(), "top-right");
+
+// design.md Decision 3: チェーン絞り込みプルダウンを地図左上に追加する。
+// `change`で`applyChainFilter()`を呼び、カフェレイヤの`filter`だけを張り替える。
+map.addControl(new ChainFilterControl(applyChainFilter), "top-left");
 
 // チェーン専用アイコン・汎用アイコンは、`web/public/img/`配下の色分けカップ画像
 // (`cup_*.png`)を`map.loadImage()`で読み込み`map.addImage()`で登録する(design.md Decision 2)。

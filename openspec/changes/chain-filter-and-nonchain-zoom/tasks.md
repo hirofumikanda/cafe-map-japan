@@ -27,11 +27,11 @@
 
 <!-- GitHub Issue: #78 -->
 
-- [ ] 4.1 MapLibre `IControl` を実装するチェーン絞り込みコントロール(`onAdd` で `<div class="maplibregl-ctrl chain-filter-ctrl">` + 視覚的に隠した `<label>` + `<select>` を生成)を追加する(design.md Decision 3)。
-- [ ] 4.2 `<select>` の `<option>` を `CHAIN_FILTER_OPTIONS` から生成し、初期選択値を `"all"` にする。`change` イベントで `applyChainFilter(select.value)` を呼ぶ。
-- [ ] 4.3 コントロールコンテナで `mousedown` / `dblclick` / `wheel` / `touchstart` の伝播を停止し、地図ジェスチャと干渉させない(design.md Decision 3)。
-- [ ] 4.4 `map.addControl(new ChainFilterControl(...), "top-left")` を `NavigationControl` の追加付近で登録する。
-- [ ] 4.5 `web/public/index.html` の `<style>` に `.chain-filter-ctrl` / `.chain-filter-ctrl select` のカスタムスタイル(`appearance: none`、角丸、ボーダー/シャドウ、SVGシェブロン、`min-height: 40px`、`font-size: 16px`、`:focus-visible` リング、ホバー状態、視覚的に隠す `.visually-hidden` ラベル)を追加する(design.md Decision 4)。
+- [x] 4.1 MapLibre `IControl` を実装するチェーン絞り込みコントロール(`onAdd` で `<div class="maplibregl-ctrl chain-filter-ctrl">` + 視覚的に隠した `<label>` + `<select>` を生成)を追加する(design.md Decision 3)。
+- [x] 4.2 `<select>` の `<option>` を `CHAIN_FILTER_OPTIONS` から生成し、初期選択値を `"all"` にする。`change` イベントで `applyChainFilter(select.value)` を呼ぶ。
+- [x] 4.3 コントロールコンテナで `mousedown` / `dblclick` / `wheel` / `touchstart` の伝播を停止し、地図ジェスチャと干渉させない(design.md Decision 3)。
+- [x] 4.4 `map.addControl(new ChainFilterControl(...), "top-left")` を `NavigationControl` の追加付近で登録する。
+- [x] 4.5 `web/public/index.html` の `<style>` に `.chain-filter-ctrl` / `.chain-filter-ctrl select` のカスタムスタイル(`appearance: none`、角丸、ボーダー/シャドウ、SVGシェブロン、`min-height: 40px`、`font-size: 16px`、`:focus-visible` リング、ホバー状態、視覚的に隠す `.visually-hidden` ラベル)を追加する(design.md Decision 4)。
 
 ## 5. ビルドと動作確認
 
