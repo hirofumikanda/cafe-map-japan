@@ -247,7 +247,18 @@ map.on("load", async () => {
       // spec: POIシンボルに店名等のラベルを表示する。ポップアップの名称フォールバック順
       // (name→brand→operator)と揃える。アイコンの左への配置を優先し、他ラベルと衝突する
       // 場合はアイコンの上にフォールバックする(design.md Decision 1)。
-      "text-field": ["coalesce", ["get", "name"], ["get", "brand"], ["get", "operator"]],
+      // spec: ラベルはズームレベル15以上でのみ表示し、z15未満では表示しない
+      // (label-min-zoom-15 design.md Decision)。MapLibreのシンボルレイアウトには
+      // ラベル単体の最小ズーム指定がないため、`step`式でz15未満は空文字列を返して
+      // ラベルを生成しない。`text-optional: true`により、ラベルが無いズームでも
+      // アイコンは通常どおり表示され続ける。
+      "text-field": [
+        "step",
+        ["zoom"],
+        "",
+        15,
+        ["coalesce", ["get", "name"], ["get", "brand"], ["get", "operator"]],
+      ],
       "text-font": ["Noto Sans Regular"],
       "text-size": 12,
       "text-variable-anchor": ["left", "top"],
