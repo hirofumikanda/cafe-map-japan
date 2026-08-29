@@ -2,9 +2,9 @@
 
 <!-- GitHub Issue: #85 -->
 
-- [ ] 1.1 `web/src/main.js`の`CAFE_LAYER_ID`レイヤ`layout`で、`text-field`をズーム依存の`step`式に置き換える(z15未満は空文字列、z15以上は`["coalesce", ["get","name"], ["get","brand"], ["get","operator"]]`)
-- [ ] 1.2 `text-field`のズーム出し分け意図を説明するコメントを追記し、`text-optional: true`によりz15未満でもアイコンが表示され続けることを明記する
-- [ ] 1.3 `icon-image`・`filter`(confidenceフィルタ / チェーン・非チェーンのズーム出し分け)・クリック/ホバーのイベント登録を変更していないことを確認する
+- [x] 1.1 `web/src/main.js`の`CAFE_LAYER_ID`レイヤ`layout`で、`text-field`をズーム依存の`step`式に置き換える(z15未満は空文字列、z15以上は`["coalesce", ["get","name"], ["get","brand"], ["get","operator"]]`)
+- [x] 1.2 `text-field`のズーム出し分け意図を説明するコメントを追記し、`text-optional: true`によりz15未満でもアイコンが表示され続けることを明記する
+- [x] 1.3 `icon-image`・`filter`(confidenceフィルタ / チェーン・非チェーンのズーム出し分け)・クリック/ホバーのイベント登録を変更していないことを確認する
 
 ## 2. 動作確認
 
@@ -19,4 +19,4 @@
 
 <!-- GitHub Issue: #85 -->
 
-- [ ] 3.1 `openspec validate label-min-zoom-15 --strict` が通ることを確認する
+- [x] 3.1 `openspec validate label-min-zoom-15 --strict` が通ることを確認する
