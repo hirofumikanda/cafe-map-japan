@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  CHAIN_FILTER_OPTIONS,
   CHAIN_TABLE,
   GENERIC_CAFE_ICON_ID,
+  buildChainIdExpression,
   buildIconImageExpression,
   normalizeChainText,
   resolveChainIconId,
@@ -101,4 +103,27 @@ test("buildIconImageExpression produces a case expression ending in the generic 
   assert.equal(expression.at(-1), GENERIC_CAFE_ICON_ID);
   // 各チェーン分の [condition, iconId] ペア + 先頭"case" + 末尾フォールバック
   assert.equal(expression.length, 1 + CHAIN_TABLE.length * 2 + 1);
+});
+
+test("buildChainIdExpression produces a case expression ending in an empty string", () => {
+  const expression = buildChainIdExpression();
+  assert.equal(expression[0], "case");
+  assert.equal(expression.at(-1), "");
+  // 各チェーン分の [condition, id] ペア + 先頭"case" + 末尾フォールバック
+  assert.equal(expression.length, 1 + CHAIN_TABLE.length * 2 + 1);
+});
+
+test("buildChainIdExpression returns chain ids in CHAIN_TABLE order", () => {
+  const expression = buildChainIdExpression();
+  const ids = expression.slice(1, -1).filter((_, index) => index % 2 === 1);
+  assert.deepEqual(ids, CHAIN_TABLE.map((chain) => chain.id));
+});
+
+test("CHAIN_FILTER_OPTIONS starts with the all option followed by every chain", () => {
+  assert.deepEqual(CHAIN_FILTER_OPTIONS[0], { value: "all", label: "すべて" });
+  assert.equal(CHAIN_FILTER_OPTIONS.length, CHAIN_TABLE.length + 1);
+  assert.deepEqual(
+    CHAIN_FILTER_OPTIONS.slice(1),
+    CHAIN_TABLE.map((chain) => ({ value: chain.id, label: chain.label })),
+  );
 });

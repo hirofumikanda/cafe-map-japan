@@ -2,18 +2,18 @@
 
 <!-- GitHub Issue: #76 (## 1, ## 2 を1 Issueに統合) -->
 
-- [ ] 1.1 `web/src/chains.js` に、チェーンごとの `matchKeys` 部分一致条件を組み立てる共通ヘルパー(例: `chainMatchCondition(chain)`)と共有の `searchText` 定義を切り出す(design.md Decision 1)。
-- [ ] 1.2 `buildIconImageExpression()` を 1.1 のヘルパーを使う形にリファクタする。返り値の構造(`["case", <条件, iconId>..., GENERIC_CAFE_ICON_ID]`)と評価順(`CHAIN_TABLE` 順)は変更しない。
-- [ ] 1.3 一致したチェーンの `id` を返し、非一致時は空文字列 `""` を返す `["case", ...]` 式ビルダー `buildChainIdExpression()` を追加・エクスポートする(design.md Decision 1)。
-- [ ] 1.4 プルダウン選択肢 `CHAIN_FILTER_OPTIONS`(先頭 `{ value: "all", label: "すべて" }`、以降 `CHAIN_TABLE` から `{ value: id, label: label }` を導出)を追加・エクスポートする(design.md Decision 5)。
+- [x] 1.1 `web/src/chains.js` に、チェーンごとの `matchKeys` 部分一致条件を組み立てる共通ヘルパー(例: `chainMatchCondition(chain)`)と共有の `searchText` 定義を切り出す(design.md Decision 1)。
+- [x] 1.2 `buildIconImageExpression()` を 1.1 のヘルパーを使う形にリファクタする。返り値の構造(`["case", <条件, iconId>..., GENERIC_CAFE_ICON_ID]`)と評価順(`CHAIN_TABLE` 順)は変更しない。
+- [x] 1.3 一致したチェーンの `id` を返し、非一致時は空文字列 `""` を返す `["case", ...]` 式ビルダー `buildChainIdExpression()` を追加・エクスポートする(design.md Decision 1)。
+- [x] 1.4 プルダウン選択肢 `CHAIN_FILTER_OPTIONS`(先頭 `{ value: "all", label: "すべて" }`、以降 `CHAIN_TABLE` から `{ value: id, label: label }` を導出)を追加・エクスポートする(design.md Decision 5)。
 
 ## 2. chains.test.js: ユニットテスト追加
 
 <!-- GitHub Issue: #76 -->
 
-- [ ] 2.1 `buildChainIdExpression()` が `["case"]` で始まり、末尾フォールバックが `""`、長さが `1 + CHAIN_TABLE.length * 2 + 1` であることを検証するテストを追加する。
-- [ ] 2.2 `CHAIN_FILTER_OPTIONS` の先頭が `{ value: "all", label: "すべて" }` で、以降が `CHAIN_TABLE` と同数・同順の `{ value, label }` であることを検証するテストを追加する。
-- [ ] 2.3 既存テスト(特に `buildIconImageExpression produces a case expression ending in the generic icon`)がリファクタ後も通ることを `cd web && npm test` で確認する。
+- [x] 2.1 `buildChainIdExpression()` が `["case"]` で始まり、末尾フォールバックが `""`、長さが `1 + CHAIN_TABLE.length * 2 + 1` であることを検証するテストを追加する。
+- [x] 2.2 `CHAIN_FILTER_OPTIONS` の先頭が `{ value: "all", label: "すべて" }` で、以降が `CHAIN_TABLE` と同数・同順の `{ value, label }` であることを検証するテストを追加する。
+- [x] 2.3 既存テスト(特に `buildIconImageExpression produces a case expression ending in the generic icon`)がリファクタ後も通ることを `cd web && npm test` で確認する。
 
 ## 3. main.js: カフェレイヤのフィルタ合成
 
