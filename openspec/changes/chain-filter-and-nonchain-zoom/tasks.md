@@ -19,9 +19,9 @@
 
 <!-- GitHub Issue: #77 -->
 
-- [ ] 3.1 `buildCafeFilter(selectedValue)` を実装する。`"all"` 選択時は `["all", CAFE_CONFIDENCE_FILTER, ["any", ["!=", chainIdExpr, ""], [">=", ["zoom"], 14]]]`、特定チェーン選択時は `["all", CAFE_CONFIDENCE_FILTER, ["==", chainIdExpr, selectedValue]]` を返す(design.md Decision 2)。`chainIdExpr` は `buildChainIdExpression()`。
-- [ ] 3.2 `map.on("load")` 内のレイヤ追加で、`filter` に `buildCafeFilter("all")` を渡すよう変更する(`CAFE_CONFIDENCE_FILTER` 直接指定を置き換え)。
-- [ ] 3.3 選択値を受け取って `map.setFilter(CAFE_LAYER_ID, buildCafeFilter(value))` を呼ぶ適用関数(例: `applyChainFilter(value)`)を実装する。
+- [x] 3.1 `buildCafeFilter(selectedValue)` を実装する。`"all"` 選択時は `["all", CAFE_CONFIDENCE_FILTER, ["any", ["!=", chainIdExpr, ""], [">=", ["zoom"], 14]]]`、特定チェーン選択時は `["all", CAFE_CONFIDENCE_FILTER, ["==", chainIdExpr, selectedValue]]` を返す(design.md Decision 2)。`chainIdExpr` は `buildChainIdExpression()`。
+- [x] 3.2 `map.on("load")` 内のレイヤ追加で、`filter` に `buildCafeFilter("all")` を渡すよう変更する(`CAFE_CONFIDENCE_FILTER` 直接指定を置き換え)。
+- [x] 3.3 選択値を受け取って `map.setFilter(CAFE_LAYER_ID, buildCafeFilter(value))` を呼ぶ適用関数(例: `applyChainFilter(value)`)を実装する。
 
 ## 4. main.js / index.html: プルダウンコントロール
 

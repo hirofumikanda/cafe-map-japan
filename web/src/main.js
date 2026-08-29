@@ -1,7 +1,12 @@
 import { Map as MapLibreMap, NavigationControl, Popup, addProtocol } from "maplibre-gl";
 import { Protocol as PMTilesProtocol } from "pmtiles";
 
-import { CHAIN_TABLE, GENERIC_CAFE_ICON_ID, buildIconImageExpression } from "./chains.js";
+import {
+  CHAIN_TABLE,
+  GENERIC_CAFE_ICON_ID,
+  buildChainIdExpression,
+  buildIconImageExpression,
+} from "./chains.js";
 
 const OSM_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
@@ -36,6 +41,31 @@ const CAFE_CONFIDENCE_FILTER = [
   ["get", "confidence"],
   ["step", ["zoom"], 0.99, 15, 0.97, 16, 0.95, 17, 0.9],
 ];
+
+// design.md Decision 1: brand/operator/nameが既知チェーンに一致すればそのidを、
+// 一致しなければ空文字列を返すスタイル式。フィルタ内で「チェーン店か否か」
+// (`["!=", expr, ""]`)・「特定チェーンか」(`["==", expr, "<id>"]`)の判定に使う。
+const CAFE_CHAIN_ID_EXPRESSION = buildChainIdExpression();
+
+// design.md Decision 2: カフェレイヤの`filter`を、常時適用するconfidenceフィルタと
+// プルダウン選択に応じたスコープ条件の`["all", ...]`合成で組み立てる。
+// - "all": チェーン店はレイヤの`minzoom`(z10)から、チェーン店以外はz14以上でのみ表示
+// - 特定チェーン: 当該チェーンに一致するPOIのみ(ズーム出し分けなし。z10以上はレイヤ`minzoom`由来)
+// 選択変更時はapplyChainFilter()が`map.setFilter()`でこの式を張り替えるだけでよい
+// (レイヤ・ソース・アイコンは不変)。
+function buildCafeFilter(selectedValue) {
+  const scope =
+    selectedValue === "all"
+      ? ["any", ["!=", CAFE_CHAIN_ID_EXPRESSION, ""], [">=", ["zoom"], 14]]
+      : ["==", CAFE_CHAIN_ID_EXPRESSION, selectedValue];
+  return ["all", CAFE_CONFIDENCE_FILTER, scope];
+}
+
+// プルダウンの選択値を受け取り、カフェレイヤの`filter`だけを張り替える(design.md Decision 2)。
+// チェーン絞り込みコントロール(Issue #78)の`change`イベントから呼ばれる。
+function applyChainFilter(value) {
+  map.setFilter(CAFE_LAYER_ID, buildCafeFilter(value));
+}
 
 const style = {
   version: 8,
@@ -79,6 +109,8 @@ const map = new MapLibreMap({
 
 // ブラウザのdevtoolsから地図の状態を確認できるよう公開しておく(動作確認・デバッグ用)。
 window.cafeMap = map;
+// チェーン絞り込みコントロール(Issue #78)実装前でも動作確認できるよう公開する。
+window.applyChainFilter = applyChainFilter;
 
 // design.md 決定4: MapLibre標準のNavigationControl(ズーム・回転・傾き操作)を地図右上に表示する。
 map.addControl(new NavigationControl(), "top-right");
@@ -140,7 +172,9 @@ map.on("load", async () => {
     source: CAFE_SOURCE_ID,
     "source-layer": CAFE_SOURCE_LAYER,
     minzoom: CAFE_LAYER_MIN_ZOOM,
-    filter: CAFE_CONFIDENCE_FILTER,
+    // design.md Decision 2: 初期状態はプルダウン「すべて」。confidenceフィルタと
+    // チェーン/非チェーンのズーム出し分けを合成した式を設定する。
+    filter: buildCafeFilter("all"),
     layout: {
       // spec: brand/operator/nameに基づき既知チェーンには専用アイコン、
       // それ以外には汎用アイコンを割り当てる(design.md 決定5、chains.js参照)。
