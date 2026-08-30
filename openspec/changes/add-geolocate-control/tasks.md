@@ -13,11 +13,11 @@
 
 <!-- GitHub Issue: #93 -->
 
-- [ ] 2.1 `cd web && npm test` が通ることを確認する
-- [ ] 2.2 `cd web && npm run build` が成功することを確認する
-- [ ] 2.3 `npm run serve` でマップを開き、右下にGeolocateボタンが表示され、帰属表示ボタンより上に配置されていることを目視確認する
-- [ ] 2.4 帰属表示にOpenStreetMapおよびOverture Maps Foundationのクレジットが従来どおり表示されることを確認する
-- [ ] 2.5 Geolocateボタンを押下してもJSエラーで地図が壊れないこと、ナビゲーションコントロール・チェーン絞り込み・POIポップアップが従来どおり動作することを確認する
+- [x] 2.1 `cd web && npm test` が通ることを確認する
+- [x] 2.2 `cd web && npm run build` が成功することを確認する
+- [x] 2.3 `npm run serve` でマップを開き、右下にGeolocateボタンが表示され、帰属表示ボタンより上に配置されていることを目視確認する
+- [x] 2.4 帰属表示にOpenStreetMapおよびOverture Maps Foundationのクレジットが従来どおり表示されることを確認する
+- [x] 2.5 Geolocateボタンを押下してもJSエラーで地図が壊れないこと、ナビゲーションコントロール・チェーン絞り込み・POIポップアップが従来どおり動作することを確認する
 
 ## 3. 仕様の反映
 
