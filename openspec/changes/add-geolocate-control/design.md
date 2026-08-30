@@ -4,7 +4,7 @@
 
 MapLibre GL JS v6には標準の`GeolocateControl`があり、Geolocation APIのラップ・現在地マーカー描画・追従モードのUIを提供する。追加のnpm依存やCSSは不要(`maplibre-gl.css`にボタンスタイルを含む)。
 
-右下コーナーのコントロールは`.maplibregl-ctrl-bottom-right .maplibregl-ctrl { float: right; clear: both }`で、DOMへの追加順に上から下へ積み上がる。自動`AttributionControl`は`Map`コンストラクタ内で最初に追加されるため、後から`bottom-right`へ追加したコントロールは帰属表示の**下**に来る。
+MapLibreの`map.addControl(control, position)`は、`position`が下辺(`bottom-*`)の場合コントロール要素をコーナーコンテナの**先頭**へ挿入する(`insertBefore(container.firstChild)`)。コンテナは`.maplibregl-ctrl-bottom-right .maplibregl-ctrl { float: right; clear: both }`で上から下へ積まれるため、**後から**`bottom-right`へ追加したコントロールほど上に配置される。自動`AttributionControl`は`Map`コンストラクタ内で最初に追加されるので、その後に`bottom-right`へ追加したコントロールは帰属表示ボタンの**上**に来る。
 
 ## Goals / Non-Goals
 
@@ -19,12 +19,14 @@ MapLibre GL JS v6には標準の`GeolocateControl`があり、Geolocation APIの
 
 ## Decisions
 
-### Decision: 自動attributionを無効化し、`GeolocateControl` → `AttributionControl`の順で明示追加する
-`Map`生成オプションに`attributionControl: false`を追加し、`map.addControl(new GeolocateControl(...), "bottom-right")`、続けて`map.addControl(new AttributionControl(), "bottom-right")`を呼ぶ。右下コーナーではDOM追加順に上から積まれるため、Geolocateボタンが帰属表示ボタンの上に配置される。`AttributionControl`は引数なしで生成し、`style.sources`の`attribution`集約・コンパクト表示のレスポンシブ挙動は従来どおり得る。
+### Decision: 自動attributionはそのままに、`GeolocateControl`を`bottom-right`へ追加する
+`Map`生成オプションは変更せず(自動`AttributionControl`をそのまま使う)、`NavigationControl`追加の近くで`map.addControl(geolocateControl, "bottom-right")`を1回呼ぶ。MapLibreは下辺コーナーへの追加時に要素をコンテナ先頭へ挿入するため、コンストラクタで先に追加されている帰属表示ボタンの上にGeolocateボタンが配置される。帰属表示の内容(`customAttribution`の"MapLibre"リンク + `style.sources`集約のOSM / Overture)とコンパクト表示は自動追加のまま変わらない。
 
-- **代替案1: 自動attributionのまま`GeolocateControl`を`bottom-right`に追加** — 実装は1行で済むが、Geolocateボタンが帰属表示の下に来て要件(帰属表示ボタンの上)を満たさない。却下。
+> 補足: 当初の設計では「下辺コーナーは追加順に上から積まれる」と誤認し、`attributionControl: false` + `GeolocateControl` → `AttributionControl`の明示追加を採用していた。実装時にMapLibre v6の`addControl`が`bottom-*`で`insertBefore(firstChild)`することを確認し、単純な後追い1回追加へ変更した(#92)。
+
+- **代替案1: `attributionControl: false` + `AttributionControl` → `Geolocate`の順で明示追加** — 挙動は同じにできるが、`AttributionControl`引数なし生成が既定と同一とはいえ生成コードを二重に持つことになり、明示追加を誤ると帰属表示が消えるリスクが残る。自動追加を活かす方が安全で短い。却下。
 - **代替案2: `GeolocateControl`を`bottom-left`など別コーナーへ配置** — 「帰属表示ボタンの上」という位置関係が崩れ、左下は将来の凡例等と競合しうる。却下。
-- **代替案3: CSSで`flex-direction: column-reverse`等を当てて自動attributionの順序を反転** — グローバルなコントロール配置に副作用があり、MapLibre内部のDOM構造前提に依存する。明示追加の方が意図が明確。却下。
+- **代替案3: CSSで`.maplibregl-ctrl-bottom-right`の順序を反転** — グローバルなコントロール配置に副作用があり、MapLibre内部のDOM構造前提に依存する。却下。
 
 ### Decision: `GeolocateControl`のオプション
 ```js
@@ -44,6 +46,5 @@ new GeolocateControl({
 ## Risks / Trade-offs
 
 - **[セキュアコンテキスト必須] Geolocation APIはHTTPSまたはlocalhostでのみ動作する** → 本番のGitHub Pagesはhttps、ローカルは`npm run serve`(localhost)で条件を満たす。file://直開きでは動かない旨をタスクの動作確認で意識する。
-- **[自動attribution無効化の副作用] `attributionControl: false`にすると、明示追加を忘れると帰属表示が消える** → 同じ関数内で必ず`AttributionControl`を追加し、動作確認およびspecのシナリオ「帰属表示が維持される」で担保する。
-- **[コンパクト表示の初期状態] 手動追加の`AttributionControl`は`compact`未指定時、地図幅で自動判定** — 従来の自動追加と同じ挙動のため実質差分なし。必要なら将来`{ compact: true }`を検討。
+- **[MapLibreの内部挙動依存] Geolocateが帰属表示の上に来るのは`addControl`が`bottom-*`で`insertBefore(firstChild)`する実装に依存する** → MapLibre v6 (6.5.0) で確認済み。メジャーバージョン更新時はスクリーンショットで配置を再確認する。specのシナリオ「Geolocateコントロールが帰属表示ボタンより上に配置される」で担保する。
 - **[ヘッドレス確認の限界] Playwright/Chromiumでは実際の位置情報は得られない** → 目視確認はボタンの存在・配置(帰属表示の上)・押下でエラーにならないこと、までを対象とする。

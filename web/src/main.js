@@ -1,4 +1,10 @@
-import { Map as MapLibreMap, NavigationControl, Popup, addProtocol } from "maplibre-gl";
+import {
+  GeolocateControl,
+  Map as MapLibreMap,
+  NavigationControl,
+  Popup,
+  addProtocol,
+} from "maplibre-gl";
 import { Protocol as PMTilesProtocol } from "pmtiles";
 
 import {
@@ -172,6 +178,29 @@ window.applyChainFilter = applyChainFilter;
 
 // design.md 決定4: MapLibre標準のNavigationControl(ズーム・回転・傾き操作)を地図右上に表示する。
 map.addControl(new NavigationControl(), "top-right");
+
+// design.md Decision: 現在地表示コントロール。`trackUserLocation: true`で初回押下時に
+// 現在地へ`flyTo`し追従モードに入り、再押下で解除する標準UIを使う。`showUserLocation`
+// (既定true)で現在地マーカーと精度円を描画し、`enableHighAccuracy: true`でモバイルの
+// 現在地精度を優先する。Geolocation APIはセキュアコンテキスト(https/localhost)でのみ動作する。
+const geolocateControl = new GeolocateControl({
+  positionOptions: { enableHighAccuracy: true },
+  trackUserLocation: true,
+  showUserLocation: true,
+});
+// design.md Decision: エラー処理はMapLibre標準に委ね、独自エラーUIは追加しない。
+// 権限拒否・取得失敗時はGeolocateControlが自動でボタンを非アクティブ表示に戻すため、
+// ここではデバッグ用にwarnするに留める(地図・他コントロール・POI表示は影響を受けない)。
+geolocateControl.on("error", (e) => {
+  console.warn("現在地の取得に失敗しました", e);
+});
+
+// design.md Decision: 自動追加される帰属表示(`AttributionControl`)はそのままに、
+// Geolocateコントロールを`bottom-right`へ追加する。MapLibreは下辺コーナーへの追加時に
+// コンテナ先頭へ挿入する(`insertBefore(firstChild)`)ため、後から追加したGeolocateボタンが
+// 先に入っている帰属表示ボタンの上に配置される。帰属表示の内容(MapLibre / OSM /
+// Overture Maps Foundation)は自動追加のまま変更しない。
+map.addControl(geolocateControl, "bottom-right");
 
 // design.md Decision 3: チェーン絞り込みプルダウンを地図左上に追加する。
 // `change`で`applyChainFilter()`を呼び、カフェレイヤの`filter`だけを張り替える。
